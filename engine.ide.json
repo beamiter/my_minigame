@@ -1,0 +1,197 @@
+{
+	"resourceDirs": {
+		"buildIn": [],
+		"idePack": [
+			"assets/resource/"
+		]
+	},
+	"engineVersion": "1.1.0",
+	"build": {
+		"mainScene": {
+			"2d": "assets/resource/mygame2d.scene",
+			"3d": "assets/resource/mygame.scene"
+		},
+		"usingPlatform": [
+			[
+				"default"
+			]
+		],
+		"onlyBuildScript": false,
+		"clearAllBuildCache": false,
+		"disableAutoRegisterPack": false,
+		"textureCompressionEncodeQuality": {
+			"pvr": "pvrtcfast",
+			"etc": "etcfastperceptual",
+			"astc": "astcmedium",
+			"s3tc": "normal"
+		}
+	},
+	"layers": [
+		"Default",
+		"TransparentFx",
+		"Ignore Ragcast",
+		"",
+		"Water",
+		"UI",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		""
+	],
+	"physics2DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+	"physics3DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+	"engineProjectId": "5a545f557fd0df9b581c0a800a",
+	"engineConfigJson": {
+		"globalSetting": {
+			"baseURL": "file:///assets/",
+			"designWidth": 1280,
+			"designHeight": 720,
+			"logFilter": "",
+			"logLevel": 3,
+			"layers": [
+				"Default",
+				"TransparentFx",
+				"Ignore Ragcast",
+				"",
+				"Water",
+				"UI",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				""
+			],
+			"physics3DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+			"backupURLs": [],
+			"globalHTTPRetry": 0,
+			"useEngineSubcontext": false
+		}
+	},
+	"gameJson": {
+		"deviceOrientation": "portrait",
+		"engine": true,
+		"plugins": {
+			"WXEngine": {
+				"version": "1.1.0",
+				"provider": "wx20afc706a711eefc",
+				"contexts": [
+					{
+						"type": "isolatedContext"
+					}
+				]
+			}
+		},
+		"showStatusBar": false,
+		"resizable": false,
+		"disableSetUserStorageFromMiniProgram": false,
+		"networkTimeout": {
+			"request": 60000,
+			"connectSocket": 60000,
+			"uploadFile": 60000,
+			"downloadFile": 60000
+		},
+		"lockStepOptions": {
+			"gameTick": 33,
+			"heartBeatTick": 2000,
+			"offlineTimeLength": 100000,
+			"UDPReliabilityStrategy": 3,
+			"dataType": "string"
+		},
+		"permission": {
+			"scope.userInfo": {
+				"desc": ""
+			},
+			"scope.userLocation": {
+				"desc": ""
+			},
+			"scope.werun": {
+				"desc": ""
+			},
+			"scope.writePhotosAlbum": {
+				"desc": ""
+			}
+		},
+		"navigateToMiniProgramAppIdList": [],
+		"subpackages": [],
+		"workers": "",
+		"openDataContext": "",
+		"openDataContextExtension": false
+	},
+	"buildConfigList": [
+		{
+			"platformName": "BuildWX",
+			"platformWording": "微信小游戏",
+			"projectRootPath": "minigame/",
+			"distPath": "minigame/assets",
+			"assetsGameJsPath": "minigame/assets/game.js"
+		},
+		{
+			"platformName": "BuildH5",
+			"platformWording": "H5小游戏",
+			"projectRootPath": "minigame-1-BuildH5/",
+			"distPath": "minigame-1-BuildH5/assets",
+			"assetsGameJsPath": "minigame-1-BuildH5/assets/game.js",
+			"customConfig": {
+				"shouldWindowDefineEngineCode": true,
+				"useLocalServer": true
+			},
+			"usingPlatformIndex": 0,
+			"buildWebGLEngine": true
+		},
+		{
+			"platformName": "BuildQQ",
+			"platformWording": "QQ小游戏",
+			"projectRootPath": "minigame-1-BuildQQ/",
+			"distPath": "minigame-1-BuildQQ/assets",
+			"assetsGameJsPath": "minigame-1-BuildQQ/assets/game.js",
+			"usingPlatformIndex": 0,
+			"buildWebGLEngine": true
+		}
+	],
+	"cli": {
+		"dispatchAction": ""
+	}
+}
