@@ -7,25 +7,25 @@ export default class cameraController extends engine.Script {
   })
   public name: string = "myname"
 
-  private targetAnchor_: Vector3 = Vector3.createFromNumber(0, 0, 0);
+  private _targetAnchor: Vector3 = Vector3.createFromNumber(0, 0, 0);
 
   public shiftCameraPos(pos: Vector3) {
-    let prevPos = this.targetAnchor_.clone();
-    this.targetAnchor_ = pos;
-    this.targetAnchor_.y = 0;
-    let shiftPos = this.targetAnchor_.sub(prevPos);
+    let prevPos = this._targetAnchor.clone();
+    this._targetAnchor = pos;
+    this._targetAnchor.y = 0;
+    let shiftPos = this._targetAnchor.sub(prevPos);
     console.log(pos, shiftPos);
     this.entity.transform.position.add(shiftPos, this.entity.transform.position);
   }
 
   // @ts-ignore
   set targetAnchor(pos: Vector3) {
-    this.targetAnchor_ = pos.clone();
+    this._targetAnchor = pos.clone();
   }
 
   // @ts-ignore
   get targetAnchor(): Vector3 {
-    return this.targetAnchor_;
+    return this._targetAnchor;
   }
 
   public onAwake() {

@@ -145,7 +145,7 @@ function getRegisterPaths(registerInfos) {
     "platform": [
       "default"
     ],
-    "buildin": "register_7719f86a.json",
+    "buildin": "register_4e9f28c2.json",
     "idePack": "register_571296f6.json"
   }
 ]

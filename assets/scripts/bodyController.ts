@@ -7,30 +7,30 @@ export default class bodyController extends engine.Script {
   })
   public name: string = "myname"
 
-  private canJump_: boolean = false;
-  private curTime_: number = 0.0;
-  private epochTime_: number = 0.5;
-  private yCoordinate_: number = 0.55;
+  private _canJump: boolean = false;
+  private _curTime: number = 0.0;
+  private _epochTime: number = 0.5;
+  private _yCoordinate: number = 0.55;
   // 0: x, 1: y, 2: z.
-  private rotateAxis_: number = 0;
-  private jumpHeight_: number = 2;
-  private deltaPos_: Vector3 = new Vector3();
-  private targetPos_: Vector3 = new Vector3();
+  private _rotateAxis: number = 0;
+  private _jumpHeight: number = 2;
+  private _deltaPos: Vector3 = new Vector3();
+  private _targetPos: Vector3 = new Vector3();
 
   // @ts-ignore
   set targetPos(pos: Vector3) {
-    this.targetPos_ = pos.clone();
-    this.targetPos_.y = this.yCoordinate_;
-    this.targetPos_.sub(this.entity.transform.position, this.deltaPos_);
+    this._targetPos = pos.clone();
+    this._targetPos.y = this._yCoordinate;
+    this._targetPos.sub(this.entity.transform.position, this._deltaPos);
   }
 
   // @ts-ignore
   get targetPos(): Vector3 {
-    return this.targetPos_;
+    return this._targetPos;
   }
 
   public onTouchEnd() {
-    this.canJump_ = true;
+    this._canJump = true;
     // console.log(this.canJump_);
   }
   public onAwake() {
@@ -41,25 +41,25 @@ export default class bodyController extends engine.Script {
 
 
   public onUpdate(dt) {
-    if (!this.canJump_) {
+    if (!this._canJump) {
       return;
     }
 
     // This is for moving logic.
-    if (this.curTime_ <= this.epochTime_) {
-      this.curTime_ += dt;
-      let ratio = dt / this.epochTime_;
-      let dir = Math.sign(this.epochTime_ / 2 - this.curTime_);
+    if (this._curTime <= this._epochTime) {
+      this._curTime += dt;
+      let ratio = dt / this._epochTime;
+      let dir = Math.sign(this._epochTime / 2 - this._curTime);
       // this.entity.transform.rotate(Vector3.createFromNumber(0, 0, 360 * ratio), true, false);
       this.entity.transform.position.add(
         Vector3.createFromNumber(
-          this.deltaPos_.x * ratio, dir * this.jumpHeight_ * ratio, this.deltaPos_.z * ratio),
+          this._deltaPos.x * ratio, dir * this._jumpHeight * ratio, this._deltaPos.z * ratio),
         this.entity.transform.position);
     } else {
-      this.entity.transform.position = this.targetPos_;
+      this.entity.transform.position = this._targetPos;
       // console.log(this.entity.transform.euler.z * 360 / Math.PI);
-      this.curTime_ = 0;
-      this.canJump_ = false;
+      this._curTime = 0;
+      this._canJump = false;
       engine.game.customEventEmitter.emit('JUMP_END');
     }
   };

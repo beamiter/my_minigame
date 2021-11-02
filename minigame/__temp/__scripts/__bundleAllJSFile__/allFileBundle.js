@@ -814,30 +814,30 @@ var bodyController = (function (_super) {
     function bodyController() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "myname";
-        _this.canJump_ = false;
-        _this.curTime_ = 0.0;
-        _this.epochTime_ = 0.5;
-        _this.yCoordinate_ = 0.55;
-        _this.rotateAxis_ = 0;
-        _this.jumpHeight_ = 2;
-        _this.deltaPos_ = new engine_1.Vector3();
-        _this.targetPos_ = new engine_1.Vector3();
+        _this._canJump = false;
+        _this._curTime = 0.0;
+        _this._epochTime = 0.5;
+        _this._yCoordinate = 0.55;
+        _this._rotateAxis = 0;
+        _this._jumpHeight = 2;
+        _this._deltaPos = new engine_1.Vector3();
+        _this._targetPos = new engine_1.Vector3();
         return _this;
     }
     Object.defineProperty(bodyController.prototype, "targetPos", {
         get: function () {
-            return this.targetPos_;
+            return this._targetPos;
         },
         set: function (pos) {
-            this.targetPos_ = pos.clone();
-            this.targetPos_.y = this.yCoordinate_;
-            this.targetPos_.sub(this.entity.transform.position, this.deltaPos_);
+            this._targetPos = pos.clone();
+            this._targetPos.y = this._yCoordinate;
+            this._targetPos.sub(this.entity.transform.position, this._deltaPos);
         },
         enumerable: false,
         configurable: true
     });
     bodyController.prototype.onTouchEnd = function () {
-        this.canJump_ = true;
+        this._canJump = true;
     };
     bodyController.prototype.onAwake = function () {
         var _this = this;
@@ -846,19 +846,19 @@ var bodyController = (function (_super) {
         });
     };
     bodyController.prototype.onUpdate = function (dt) {
-        if (!this.canJump_) {
+        if (!this._canJump) {
             return;
         }
-        if (this.curTime_ <= this.epochTime_) {
-            this.curTime_ += dt;
-            var ratio = dt / this.epochTime_;
-            var dir = Math.sign(this.epochTime_ / 2 - this.curTime_);
-            this.entity.transform.position.add(engine_1.Vector3.createFromNumber(this.deltaPos_.x * ratio, dir * this.jumpHeight_ * ratio, this.deltaPos_.z * ratio), this.entity.transform.position);
+        if (this._curTime <= this._epochTime) {
+            this._curTime += dt;
+            var ratio = dt / this._epochTime;
+            var dir = Math.sign(this._epochTime / 2 - this._curTime);
+            this.entity.transform.position.add(engine_1.Vector3.createFromNumber(this._deltaPos.x * ratio, dir * this._jumpHeight * ratio, this._deltaPos.z * ratio), this.entity.transform.position);
         }
         else {
-            this.entity.transform.position = this.targetPos_;
-            this.curTime_ = 0;
-            this.canJump_ = false;
+            this.entity.transform.position = this._targetPos;
+            this._curTime = 0;
+            this._canJump = false;
             engine_1.default.game.customEventEmitter.emit('JUMP_END');
         }
     };
@@ -889,23 +889,23 @@ var cameraController = (function (_super) {
     function cameraController() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "myname";
-        _this.targetAnchor_ = engine_1.Vector3.createFromNumber(0, 0, 0);
+        _this._targetAnchor = engine_1.Vector3.createFromNumber(0, 0, 0);
         return _this;
     }
     cameraController.prototype.shiftCameraPos = function (pos) {
-        var prevPos = this.targetAnchor_.clone();
-        this.targetAnchor_ = pos;
-        this.targetAnchor_.y = 0;
-        var shiftPos = this.targetAnchor_.sub(prevPos);
+        var prevPos = this._targetAnchor.clone();
+        this._targetAnchor = pos;
+        this._targetAnchor.y = 0;
+        var shiftPos = this._targetAnchor.sub(prevPos);
         console.log(pos, shiftPos);
         this.entity.transform.position.add(shiftPos, this.entity.transform.position);
     };
     Object.defineProperty(cameraController.prototype, "targetAnchor", {
         get: function () {
-            return this.targetAnchor_;
+            return this._targetAnchor;
         },
         set: function (pos) {
-            this.targetAnchor_ = pos.clone();
+            this._targetAnchor = pos.clone();
         },
         enumerable: false,
         configurable: true
@@ -948,47 +948,54 @@ var gameManager = (function (_super) {
     function gameManager() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "myname";
-        _this.cubePrefab_ = null;
-        _this.cylinderPrefab_ = null;
-        _this.posTransition = [];
+        _this._cubePrefab = null;
+        _this._cylinderPrefab = null;
+        _this._posTransition = [];
+        _this._transformPool = [];
         return _this;
     }
     gameManager.prototype.onAwake = function () {
         var _this = this;
         for (var i = 1; i <= 3; ++i) {
-            this.posTransition.push(engine_1.Vector3.createFromNumber(-i * 0.3 - 1, 0, 0));
-            this.posTransition.push(engine_1.Vector3.createFromNumber(0, 0, i * 0.3 + 1));
+            this._posTransition.push(engine_1.Vector3.createFromNumber(-i * 0.3 - 1, 0, 0));
+            this._posTransition.push(engine_1.Vector3.createFromNumber(0, 0, i * 0.3 + 1));
         }
         engine_1.default.game.customEventEmitter.on('JUMP_END', function () {
             _this.onJumpEnd();
         });
     };
     gameManager.prototype.initRoad = function () {
-        var first = this.cubePrefab_.instantiate();
+        var first = this._cubePrefab.instantiate();
         first.transform.position = engine_1.Vector3.createFromNumber(0, 0, 0);
         console.log(first.transform.position);
         this.entity.transform.addChild(first.transform);
-        var second = this.cylinderPrefab_.instantiate();
+        this._transformPool.push(first.transform);
+        var second = this._cylinderPrefab.instantiate();
         second.transform.position = engine_1.Vector3.createFromNumber(-2, 0, 0);
         console.log(second.transform.position);
         this.entity.transform.addChild(second.transform);
-        this.bodyController_.targetPos = second.transform.position;
-        this.cameraController_.targetAnchor = engine_1.Vector3.createFromNumber(-1, 0, 0);
+        this._transformPool.push(second.transform);
+        this._bodyController.targetPos = second.transform.position;
+        this._cameraController.targetAnchor = engine_1.Vector3.createFromNumber(-1, 0, 0);
     };
     gameManager.prototype.onEnable = function () {
         this.initRoad();
     };
     gameManager.prototype.addNewStone = function () {
-        var prevTargetPos = this.bodyController_.targetPos.clone();
+        var prevTargetPos = this._bodyController.targetPos.clone();
         var choice = Math.floor(Math.random() * 2);
-        var prefab = choice ? this.cubePrefab_ : this.cylinderPrefab_;
+        var prefab = choice ? this._cubePrefab : this._cylinderPrefab;
         var stone = prefab.instantiate();
         var id = Math.floor(Math.random() * 6);
-        stone.transform.position = this.bodyController_.targetPos.add(this.posTransition[id]);
+        stone.transform.position = this._bodyController.targetPos.add(this._posTransition[id]);
         stone.transform.position.y = 0;
         this.entity.transform.addChild(stone.transform);
-        this.bodyController_.targetPos = stone.transform.position;
-        this.cameraController_.shiftCameraPos(this.bodyController_.targetPos.add(prevTargetPos).scale(0.5));
+        this._transformPool.push(stone.transform);
+        if (this._transformPool.length > 6) {
+            this.entity.transform.removeChild(this._transformPool.shift());
+        }
+        this._bodyController.targetPos = stone.transform.position;
+        this._cameraController.shiftCameraPos(this._bodyController.targetPos.add(prevTargetPos).scale(0.5));
     };
     gameManager.prototype.onJumpEnd = function () {
         this.addNewStone();
@@ -1006,22 +1013,22 @@ var gameManager = (function (_super) {
         engine_1.default.decorators.property({
             type: engine_1.default.TypeNames.Prefab
         })
-    ], gameManager.prototype, "cubePrefab_", void 0);
+    ], gameManager.prototype, "_cubePrefab", void 0);
     tslib_1.__decorate([
         engine_1.default.decorators.property({
             type: engine_1.default.TypeNames.Prefab
         })
-    ], gameManager.prototype, "cylinderPrefab_", void 0);
+    ], gameManager.prototype, "_cylinderPrefab", void 0);
     tslib_1.__decorate([
         engine_1.default.decorators.property({
             type: bodyController_1.default
         })
-    ], gameManager.prototype, "bodyController_", void 0);
+    ], gameManager.prototype, "_bodyController", void 0);
     tslib_1.__decorate([
         engine_1.default.decorators.property({
             type: cameraController_1.default
         })
-    ], gameManager.prototype, "cameraController_", void 0);
+    ], gameManager.prototype, "_cameraController", void 0);
     gameManager = tslib_1.__decorate([
         engine_1.default.decorators.serialize("gameManager")
     ], gameManager);
@@ -1041,29 +1048,29 @@ var operation = (function (_super) {
     function operation() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "myname";
-        _this.enableInput_ = true;
-        _this.start_triggered_ = true;
+        _this._enableInput = true;
+        _this._start_triggered = true;
         return _this;
     }
     operation.prototype.onTouchStart = function (touch, event) {
-        if (!this.enableInput_) {
+        if (!this._enableInput) {
             return;
         }
-        this.start_triggered_ = true;
+        this._start_triggered = true;
         console.log('touch start');
         engine_1.default.game.customEventEmitter.emit('TOUCH_START');
     };
     operation.prototype.onTouchEnd = function (touch, event) {
-        if (!this.enableInput_ || !this.start_triggered_) {
+        if (!this._enableInput || !this._start_triggered) {
             return;
         }
-        this.enableInput_ = false;
-        this.start_triggered_ = false;
+        this._enableInput = false;
+        this._start_triggered = false;
         console.log('touch end');
         engine_1.default.game.customEventEmitter.emit('TOUCH_END');
     };
     operation.prototype.onJumpEnd = function () {
-        this.enableInput_ = true;
+        this._enableInput = true;
     };
     operation.prototype.onAwake = function () {
         var _this = this;

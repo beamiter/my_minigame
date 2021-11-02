@@ -7,23 +7,23 @@ var cameraController = (function (_super) {
     function cameraController() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "myname";
-        _this.targetAnchor_ = engine_1.Vector3.createFromNumber(0, 0, 0);
+        _this._targetAnchor = engine_1.Vector3.createFromNumber(0, 0, 0);
         return _this;
     }
     cameraController.prototype.shiftCameraPos = function (pos) {
-        var prevPos = this.targetAnchor_.clone();
-        this.targetAnchor_ = pos;
-        this.targetAnchor_.y = 0;
-        var shiftPos = this.targetAnchor_.sub(prevPos);
+        var prevPos = this._targetAnchor.clone();
+        this._targetAnchor = pos;
+        this._targetAnchor.y = 0;
+        var shiftPos = this._targetAnchor.sub(prevPos);
         console.log(pos, shiftPos);
         this.entity.transform.position.add(shiftPos, this.entity.transform.position);
     };
     Object.defineProperty(cameraController.prototype, "targetAnchor", {
         get: function () {
-            return this.targetAnchor_;
+            return this._targetAnchor;
         },
         set: function (pos) {
-            this.targetAnchor_ = pos.clone();
+            this._targetAnchor = pos.clone();
         },
         enumerable: false,
         configurable: true

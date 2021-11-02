@@ -1,4 +1,4 @@
-import engine, { Prefab, Vector3, Color } from "engine";
+import engine, { Prefab, Vector3, Color, Transform3D } from "engine";
 import bodyController from "../scripts/bodyController"
 import cameraController from "../scripts/cameraController"
 
@@ -17,27 +17,30 @@ export default class gameManager extends engine.Script {
   @engine.decorators.property({
     type: engine.TypeNames.Prefab
   })
-  public cubePrefab_: Prefab | null = null;
+  public _cubePrefab: Prefab | null = null;
   @engine.decorators.property({
     type: engine.TypeNames.Prefab
   })
-  public cylinderPrefab_: Prefab | null = null;
+  public _cylinderPrefab: Prefab | null = null;
   @engine.decorators.property({
     type: bodyController
   })
-  public bodyController_: bodyController
+  public _bodyController: bodyController
   @engine.decorators.property({
     type: cameraController
   })
-  public cameraController_: cameraController
+  public _cameraController: cameraController
 
-  private posTransition: Vector3[] = [];
+  private _posTransition: Vector3[] = [];
+
+  // Used for garbage collection.
+  private _transformPool: Transform3D[] = [];
 
   public onAwake() {
     // Sample pos transition.
     for (let i = 1; i <= 3; ++i) {
-      this.posTransition.push(Vector3.createFromNumber(-i * 0.3 - 1, 0, 0));
-      this.posTransition.push(Vector3.createFromNumber(0, 0, i * 0.3 + 1));
+      this._posTransition.push(Vector3.createFromNumber(-i * 0.3 - 1, 0, 0));
+      this._posTransition.push(Vector3.createFromNumber(0, 0, i * 0.3 + 1));
     }
 
     engine.game.customEventEmitter.on('JUMP_END', () => {
@@ -47,18 +50,22 @@ export default class gameManager extends engine.Script {
 
   // Init road with two entity.
   public initRoad() {
-    let first = this.cubePrefab_.instantiate();
+    let first = this._cubePrefab.instantiate();
     first.transform.position = Vector3.createFromNumber(0, 0, 0);
     console.log(first.transform.position);
     this.entity.transform.addChild(first.transform);
-    let second = this.cylinderPrefab_.instantiate();
+    this._transformPool.push(first.transform);
+
+    let second = this._cylinderPrefab.instantiate();
     second.transform.position = Vector3.createFromNumber(-2, 0, 0);
     console.log(second.transform.position);
     this.entity.transform.addChild(second.transform);
+    this._transformPool.push(second.transform);
+
     // Body
-    this.bodyController_.targetPos = second.transform.position;
+    this._bodyController.targetPos = second.transform.position;
     // Camera
-    this.cameraController_.targetAnchor = Vector3.createFromNumber(-1, 0, 0);
+    this._cameraController.targetAnchor = Vector3.createFromNumber(-1, 0, 0);
   }
 
   public onEnable() {
@@ -66,22 +73,27 @@ export default class gameManager extends engine.Script {
   }
 
   public addNewStone() {
-    let prevTargetPos = this.bodyController_.targetPos.clone();
+    let prevTargetPos = this._bodyController.targetPos.clone();
 
     let choice = Math.floor(Math.random() * 2);
     // May support more prefab in the future.
-    let prefab = choice ? this.cubePrefab_ : this.cylinderPrefab_;
+    let prefab = choice ? this._cubePrefab : this._cylinderPrefab;
     let stone = prefab.instantiate();
 
     let id = Math.floor(Math.random() * 6);
-    stone.transform.position = this.bodyController_.targetPos.add(this.posTransition[id]);
+    stone.transform.position = this._bodyController.targetPos.add(this._posTransition[id]);
     stone.transform.position.y = 0;
     this.entity.transform.addChild(stone.transform);
+    this._transformPool.push(stone.transform);
+
+    if (this._transformPool.length > 6) {
+      this.entity.transform.removeChild(this._transformPool.shift());
+    }
 
     // Body
-    this.bodyController_.targetPos = stone.transform.position;
+    this._bodyController.targetPos = stone.transform.position;
     // Camera
-    this.cameraController_.shiftCameraPos(this.bodyController_.targetPos.add(prevTargetPos).scale(0.5));
+    this._cameraController.shiftCameraPos(this._bodyController.targetPos.add(prevTargetPos).scale(0.5));
   }
 
   public onJumpEnd() {

@@ -7,30 +7,30 @@ var bodyController = (function (_super) {
     function bodyController() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "myname";
-        _this.canJump_ = false;
-        _this.curTime_ = 0.0;
-        _this.epochTime_ = 0.5;
-        _this.yCoordinate_ = 0.55;
-        _this.rotateAxis_ = 0;
-        _this.jumpHeight_ = 2;
-        _this.deltaPos_ = new engine_1.Vector3();
-        _this.targetPos_ = new engine_1.Vector3();
+        _this._canJump = false;
+        _this._curTime = 0.0;
+        _this._epochTime = 0.5;
+        _this._yCoordinate = 0.55;
+        _this._rotateAxis = 0;
+        _this._jumpHeight = 2;
+        _this._deltaPos = new engine_1.Vector3();
+        _this._targetPos = new engine_1.Vector3();
         return _this;
     }
     Object.defineProperty(bodyController.prototype, "targetPos", {
         get: function () {
-            return this.targetPos_;
+            return this._targetPos;
         },
         set: function (pos) {
-            this.targetPos_ = pos.clone();
-            this.targetPos_.y = this.yCoordinate_;
-            this.targetPos_.sub(this.entity.transform.position, this.deltaPos_);
+            this._targetPos = pos.clone();
+            this._targetPos.y = this._yCoordinate;
+            this._targetPos.sub(this.entity.transform.position, this._deltaPos);
         },
         enumerable: false,
         configurable: true
     });
     bodyController.prototype.onTouchEnd = function () {
-        this.canJump_ = true;
+        this._canJump = true;
     };
     bodyController.prototype.onAwake = function () {
         var _this = this;
@@ -39,19 +39,19 @@ var bodyController = (function (_super) {
         });
     };
     bodyController.prototype.onUpdate = function (dt) {
-        if (!this.canJump_) {
+        if (!this._canJump) {
             return;
         }
-        if (this.curTime_ <= this.epochTime_) {
-            this.curTime_ += dt;
-            var ratio = dt / this.epochTime_;
-            var dir = Math.sign(this.epochTime_ / 2 - this.curTime_);
-            this.entity.transform.position.add(engine_1.Vector3.createFromNumber(this.deltaPos_.x * ratio, dir * this.jumpHeight_ * ratio, this.deltaPos_.z * ratio), this.entity.transform.position);
+        if (this._curTime <= this._epochTime) {
+            this._curTime += dt;
+            var ratio = dt / this._epochTime;
+            var dir = Math.sign(this._epochTime / 2 - this._curTime);
+            this.entity.transform.position.add(engine_1.Vector3.createFromNumber(this._deltaPos.x * ratio, dir * this._jumpHeight * ratio, this._deltaPos.z * ratio), this.entity.transform.position);
         }
         else {
-            this.entity.transform.position = this.targetPos_;
-            this.curTime_ = 0;
-            this.canJump_ = false;
+            this.entity.transform.position = this._targetPos;
+            this._curTime = 0;
+            this._canJump = false;
             engine_1.default.game.customEventEmitter.emit('JUMP_END');
         }
     };

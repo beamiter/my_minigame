@@ -7,29 +7,29 @@ var operation = (function (_super) {
     function operation() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "myname";
-        _this.enableInput_ = true;
-        _this.start_triggered_ = true;
+        _this._enableInput = true;
+        _this._start_triggered = true;
         return _this;
     }
     operation.prototype.onTouchStart = function (touch, event) {
-        if (!this.enableInput_) {
+        if (!this._enableInput) {
             return;
         }
-        this.start_triggered_ = true;
+        this._start_triggered = true;
         console.log('touch start');
         engine_1.default.game.customEventEmitter.emit('TOUCH_START');
     };
     operation.prototype.onTouchEnd = function (touch, event) {
-        if (!this.enableInput_ || !this.start_triggered_) {
+        if (!this._enableInput || !this._start_triggered) {
             return;
         }
-        this.enableInput_ = false;
-        this.start_triggered_ = false;
+        this._enableInput = false;
+        this._start_triggered = false;
         console.log('touch end');
         engine_1.default.game.customEventEmitter.emit('TOUCH_END');
     };
     operation.prototype.onJumpEnd = function () {
-        this.enableInput_ = true;
+        this._enableInput = true;
     };
     operation.prototype.onAwake = function () {
         var _this = this;
