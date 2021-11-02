@@ -1,13 +1,13 @@
 import engine, { Vector3, TouchInputComponent } from "engine";
 
 @engine.decorators.serialize("bodyController")
-export default class bodyController extends engine.Script {
+export default class BodyController extends engine.Script {
   @engine.decorators.property({
     type: engine.TypeNames.String
   })
   public name: string = "myname"
 
-  private _canJump: boolean = false;
+  private _canMove: boolean = false;
   private _curTime: number = 0.0;
   private _epochTime: number = 0.5;
   private _yCoordinate: number = 0.55;
@@ -30,7 +30,7 @@ export default class bodyController extends engine.Script {
   }
 
   public onTouchEnd() {
-    this._canJump = true;
+    this._canMove = true;
     // console.log(this.canJump_);
   }
   public onAwake() {
@@ -41,7 +41,7 @@ export default class bodyController extends engine.Script {
 
 
   public onUpdate(dt) {
-    if (!this._canJump) {
+    if (!this._canMove) {
       return;
     }
 
@@ -59,7 +59,7 @@ export default class bodyController extends engine.Script {
       this.entity.transform.position = this._targetPos;
       // console.log(this.entity.transform.euler.z * 360 / Math.PI);
       this._curTime = 0;
-      this._canJump = false;
+      this._canMove = false;
       engine.game.customEventEmitter.emit('JUMP_END');
     }
   };

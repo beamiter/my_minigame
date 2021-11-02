@@ -1,6 +1,6 @@
-import engine, { Prefab, Vector3, Color, Transform3D } from "engine";
-import bodyController from "../scripts/bodyController"
-import cameraController from "../scripts/cameraController"
+import engine, {Prefab, Vector3, Color, Transform3D} from "engine";
+import BodyController from "../scripts/bodyController"
+import CameraController from "../scripts/cameraController"
 
 enum GameState {
   GS_INIT,
@@ -23,13 +23,13 @@ export default class gameManager extends engine.Script {
   })
   public _cylinderPrefab: Prefab | null = null;
   @engine.decorators.property({
-    type: bodyController
+    type: BodyController
   })
-  public _bodyController: bodyController
+  public _bodyController: BodyController
   @engine.decorators.property({
-    type: cameraController
+    type: CameraController
   })
-  public _cameraController: cameraController
+  public _cameraController: CameraController
 
   private _posTransition: Vector3[] = [];
 
@@ -44,8 +44,10 @@ export default class gameManager extends engine.Script {
     }
 
     engine.game.customEventEmitter.on('JUMP_END', () => {
-      this.onJumpEnd();
+      // Move camera.
+      this.addNewStone();
     });
+
   }
 
   // Init road with two entity.
@@ -94,10 +96,6 @@ export default class gameManager extends engine.Script {
     this._bodyController.targetPos = stone.transform.position;
     // Camera
     this._cameraController.shiftCameraPos(this._bodyController.targetPos.add(prevTargetPos).scale(0.5));
-  }
-
-  public onJumpEnd() {
-    this.addNewStone();
   }
 
   public onUpdate(dt) {

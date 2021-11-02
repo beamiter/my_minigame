@@ -1,7 +1,7 @@
 
 import engine, { TouchInputComponent, TouchInputEvent } from "engine";
-@engine.decorators.serialize("operation")
-export default class operation extends engine.Script {
+@engine.decorators.serialize("panelController")
+export default class PanelController extends engine.Script {
   @engine.decorators.property({
     type: engine.TypeNames.String
   })
@@ -16,7 +16,7 @@ export default class operation extends engine.Script {
       return;
     }
     this._start_triggered = true;
-    console.log('touch start');
+    // console.log('touch start');
     engine.game.customEventEmitter.emit('TOUCH_START');
   }
 
@@ -28,17 +28,13 @@ export default class operation extends engine.Script {
     // Disable input after touch end.
     this._enableInput = false;
     this._start_triggered = false;
-    console.log('touch end');
+    // console.log('touch end');
     engine.game.customEventEmitter.emit('TOUCH_END');
   }
 
-  public onJumpEnd() {
-    this._enableInput = true;
-  }
-
   public onAwake() {
-    engine.game.customEventEmitter.on('JUMP_END', () => {
-      this.onJumpEnd();
+    engine.game.customEventEmitter.on('CAMERA_MOVE', () => {
+      this._enableInput = true;
     });
   }
   public onUpdate(dt) {
