@@ -1,4 +1,4 @@
-import engine, {Prefab, Vector3, Color, Transform3D} from "engine";
+import engine, {Prefab, Vector3, Color, Transform3D, SpriteFrame, Entity} from "engine";
 import BodyController from "../scripts/bodyController"
 import CameraController from "../scripts/cameraController"
 
@@ -36,6 +36,8 @@ export default class gameManager extends engine.Script {
   // Used for garbage collection.
   private _transformPool: Transform3D[] = [];
 
+  private _spriteFrames: SpriteFrame[] = [];
+
   public onAwake() {
     // Sample pos transition.
     for (let i = 1; i <= 3; ++i) {
@@ -48,6 +50,23 @@ export default class gameManager extends engine.Script {
       this.addNewStone();
     });
 
+    // Extend ikons in the future.
+    for (let i = 0; i <= 11; ++i) {
+      let name = 'pictures/' + i + '.spriteframe';
+      console.log(name);
+      engine.loader.load(name).promise.then((spriteFrameAsset:
+                                               SpriteFrame) => {
+        this._spriteFrames.push(spriteFrameAsset);
+      });
+    }
+  }
+
+  private updateIllustrator(e: Entity) {
+    const node = e.transform.findChildByName('illustrator');
+    const uiSpriteComponent = node.entity.getComponent(engine.UISprite);
+    // Select randomly.
+    let id = Math.floor(Math.random() * this._spriteFrames.length);
+    uiSpriteComponent.spriteFrame = this._spriteFrames[id];
   }
 
   // Init road with two entity.
@@ -87,6 +106,7 @@ export default class gameManager extends engine.Script {
     stone.transform.position.y = 0;
     this.entity.transform.addChild(stone.transform);
     this._transformPool.push(stone.transform);
+    this.updateIllustrator(stone);
 
     if (this._transformPool.length > 6) {
       this.entity.transform.removeChild(this._transformPool.shift());

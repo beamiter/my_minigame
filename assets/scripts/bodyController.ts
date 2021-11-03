@@ -1,4 +1,4 @@
-import engine, { Vector3, TouchInputComponent } from "engine";
+import engine, { Vector3, TouchInputComponent, Texture2D } from "engine";
 
 @engine.decorators.serialize("bodyController")
 export default class BodyController extends engine.Script {
@@ -44,6 +44,7 @@ export default class BodyController extends engine.Script {
     if (!this._canMove) {
       return;
     }
+
 
     // This is for moving logic.
     if (this._curTime <= this._epochTime) {
