@@ -145,8 +145,8 @@ function getRegisterPaths(registerInfos) {
     "platform": [
       "default"
     ],
-    "buildin": "register_bac3b2ab.json",
-    "idePack": "register_4e2ee782.json"
+    "buildin": "register_bf4efd20.json",
+    "idePack": "register_173fba67.json"
   }
 ]
     var registerResult = getRegisterPaths(registerInfos)
@@ -185,12 +185,7 @@ function getRegisterPaths(registerInfos) {
          * Load entry scenes.
          */
         
-    var scenesPromises = [
-      engine.loader.load("scenes/mv.scene", { useFrameSystem: false }).promise,
-      engine.loader.load("scenes/panel.scene", { useFrameSystem: false }).promise
-    ];
-    engine.LitePromise.all(scenesPromises).then(function(scenes) {
-      // 加载pack资源
+    engine.loader.load("scenes/panel.scene", { useFrameSystem: false }).promise.then(function (scene) {
       
     if(true){
       /**
@@ -199,8 +194,8 @@ function getRegisterPaths(registerInfos) {
       engine.loader.register(packRegisterPath, urlPrefix).catch(function fn(error){console.error(error)});
     }
   
-      game.playScene(scenes[0]);
-      game.playScene(scenes[1]);
+
+      game.playScene(scene);
       runGame();
     }).catch(function (error){
       console.error('Fail to load scenes.', error.message, error.stack);

@@ -39,13 +39,10 @@ export default class BodyController extends engine.Script {
     });
   }
 
-
   public onUpdate(dt) {
     if (!this._canMove) {
       return;
     }
-
-
     // This is for moving logic.
     if (this._curTime <= this._epochTime) {
       this._curTime += dt;

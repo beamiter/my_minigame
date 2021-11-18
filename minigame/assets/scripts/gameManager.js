@@ -10,6 +10,32 @@ var GameState;
     GameState[GameState["GS_PLAYING"] = 1] = "GS_PLAYING";
     GameState[GameState["GS_END"] = 2] = "GS_END";
 })(GameState || (GameState = {}));
+var myColor = [
+    engine_1.Vector3.createFromNumber(204, 255, 255).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(204, 255, 153).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(204, 255, 204).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(153, 204, 153).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(204, 255, 255).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(255, 204, 153).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(204, 204, 204).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(153, 204, 255).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(204, 204, 255).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(204, 255, 153).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(255, 255, 204).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(255, 153, 204).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(255, 102, 102).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(204, 51, 153).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(102, 204, 204).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(204, 102, 0).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(153, 153, 153).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(9, 153, 102).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(204, 0, 102).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(0, 153, 153).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(153, 204, 51).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(255, 102, 102).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(51, 102, 153).scale(1 / 255),
+    engine_1.Vector3.createFromNumber(255, 102, 0).scale(1 / 255),
+];
 var gameManager = (function (_super) {
     tslib_1.__extends(gameManager, _super);
     function gameManager() {
@@ -19,7 +45,6 @@ var gameManager = (function (_super) {
         _this._cylinderPrefab = null;
         _this._posTransition = [];
         _this._transformPool = [];
-        _this._spriteFrames = [];
         return _this;
     }
     gameManager.prototype.onAwake = function () {
@@ -34,16 +59,18 @@ var gameManager = (function (_super) {
         for (var i = 0; i <= 11; ++i) {
             var name = 'pictures/' + i + '.spriteframe';
             console.log(name);
-            engine_1.default.loader.load(name).promise.then(function (spriteFrameAsset) {
-                _this._spriteFrames.push(spriteFrameAsset);
-            });
+            engine_1.default.loader.load(name);
         }
     };
     gameManager.prototype.updateIllustrator = function (e) {
         var node = e.transform.findChildByName('illustrator');
         var uiSpriteComponent = node.entity.getComponent(engine_1.default.UISprite);
-        var id = Math.floor(Math.random() * this._spriteFrames.length);
-        uiSpriteComponent.spriteFrame = this._spriteFrames[id];
+        var id = Math.floor(Math.random() * 11);
+        var name = 'pictures/' + id + '.spriteframe';
+        uiSpriteComponent.spriteFrame = engine_1.default.loader.getAsset(name);
+        var meshRenderer = e.getComponent(engine_1.default.MeshRenderer);
+        var color_id = Math.floor(Math.random() * myColor.length);
+        meshRenderer.material.setVector("_Color", myColor[color_id]);
     };
     gameManager.prototype.initRoad = function () {
         var first = this._cubePrefab.instantiate();
@@ -70,9 +97,9 @@ var gameManager = (function (_super) {
         var id = Math.floor(Math.random() * 6);
         stone.transform.position = this._bodyController.targetPos.add(this._posTransition[id]);
         stone.transform.position.y = 0;
+        this.updateIllustrator(stone);
         this.entity.transform.addChild(stone.transform);
         this._transformPool.push(stone.transform);
-        this.updateIllustrator(stone);
         if (this._transformPool.length > 6) {
             this.entity.transform.removeChild(this._transformPool.shift());
         }

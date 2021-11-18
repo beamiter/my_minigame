@@ -1,4 +1,4 @@
-import engine, {Prefab, Vector3, Color, Transform3D, SpriteFrame, Entity} from "engine";
+import engine, { Prefab, Vector3, Vector4, Color, Transform3D, SpriteFrame, Entity, Material } from "engine";
 import BodyController from "../scripts/bodyController"
 import CameraController from "../scripts/cameraController"
 
@@ -8,6 +8,32 @@ enum GameState {
   GS_END,
 }
 
+const myColor: Vector3[] = [
+  Vector3.createFromNumber(204, 255, 255).scale(1 / 255),
+  Vector3.createFromNumber(204, 255, 153).scale(1 / 255),
+  Vector3.createFromNumber(204, 255, 204).scale(1 / 255),
+  Vector3.createFromNumber(153, 204, 153).scale(1 / 255),
+  Vector3.createFromNumber(204, 255, 255).scale(1 / 255),
+  Vector3.createFromNumber(255, 204, 153).scale(1 / 255),
+  Vector3.createFromNumber(204, 204, 204).scale(1 / 255),
+  Vector3.createFromNumber(153, 204, 255).scale(1 / 255),
+  Vector3.createFromNumber(204, 204, 255).scale(1 / 255),
+  Vector3.createFromNumber(204, 255, 153).scale(1 / 255),
+  Vector3.createFromNumber(255, 255, 204).scale(1 / 255),
+  Vector3.createFromNumber(255, 153, 204).scale(1 / 255),
+  Vector3.createFromNumber(255, 102, 102).scale(1 / 255),
+  Vector3.createFromNumber(204, 51, 153).scale(1 / 255),
+  Vector3.createFromNumber(102, 204, 204).scale(1 / 255),
+  Vector3.createFromNumber(204, 102, 0).scale(1 / 255),
+  Vector3.createFromNumber(153, 153, 153).scale(1 / 255),
+  Vector3.createFromNumber(9, 153, 102).scale(1 / 255),
+  Vector3.createFromNumber(204, 0, 102).scale(1 / 255),
+  Vector3.createFromNumber(0, 153, 153).scale(1 / 255),
+  Vector3.createFromNumber(153, 204, 51).scale(1 / 255),
+  Vector3.createFromNumber(255, 102, 102).scale(1 / 255),
+  Vector3.createFromNumber(51, 102, 153).scale(1 / 255),
+  Vector3.createFromNumber(255, 102, 0).scale(1 / 255),
+];
 @engine.decorators.serialize("gameManager")
 export default class gameManager extends engine.Script {
   @engine.decorators.property({
@@ -36,8 +62,6 @@ export default class gameManager extends engine.Script {
   // Used for garbage collection.
   private _transformPool: Transform3D[] = [];
 
-  private _spriteFrames: SpriteFrame[] = [];
-
   public onAwake() {
     // Sample pos transition.
     for (let i = 1; i <= 3; ++i) {
@@ -54,10 +78,7 @@ export default class gameManager extends engine.Script {
     for (let i = 0; i <= 11; ++i) {
       let name = 'pictures/' + i + '.spriteframe';
       console.log(name);
-      engine.loader.load(name).promise.then((spriteFrameAsset:
-                                               SpriteFrame) => {
-        this._spriteFrames.push(spriteFrameAsset);
-      });
+      engine.loader.load(name);
     }
   }
 
@@ -65,8 +86,14 @@ export default class gameManager extends engine.Script {
     const node = e.transform.findChildByName('illustrator');
     const uiSpriteComponent = node.entity.getComponent(engine.UISprite);
     // Select randomly.
-    let id = Math.floor(Math.random() * this._spriteFrames.length);
-    uiSpriteComponent.spriteFrame = this._spriteFrames[id];
+    let id = Math.floor(Math.random() * 11);
+    const name = 'pictures/' + id + '.spriteframe';
+    uiSpriteComponent.spriteFrame = engine.loader.getAsset(name);
+
+    const meshRenderer = e.getComponent(engine.MeshRenderer);
+    let color_id = Math.floor(Math.random() * myColor.length);
+    // console.log(color_id, myColor[color_id]);
+    meshRenderer.material.setVector("_Color", myColor[color_id]);
   }
 
   // Init road with two entity.
@@ -104,9 +131,9 @@ export default class gameManager extends engine.Script {
     let id = Math.floor(Math.random() * 6);
     stone.transform.position = this._bodyController.targetPos.add(this._posTransition[id]);
     stone.transform.position.y = 0;
+    this.updateIllustrator(stone);
     this.entity.transform.addChild(stone.transform);
     this._transformPool.push(stone.transform);
-    this.updateIllustrator(stone);
 
     if (this._transformPool.length > 6) {
       this.entity.transform.removeChild(this._transformPool.shift());

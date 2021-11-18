@@ -31,8 +31,21 @@ var PanelController = (function (_super) {
         engine_1.default.game.customEventEmitter.on('CAMERA_MOVE', function () {
             _this._enableInput = true;
         });
+        var that = this;
+        this._load_task = engine_1.default.loader.load("scenes/mv.scene");
+        this._load_task.promise.then(function (scene) {
+            engine_1.default.game.playScene(scene);
+            console.log(that.entity.name, that.entity.transform2D.childrenCount);
+            var node = that.entity.transform2D.findChildByName('Sprite_1');
+            console.log(node.entity.name);
+        });
     };
     PanelController.prototype.onUpdate = function (dt) {
+        if (this._load_task.progress.current < this._load_task.progress.total) {
+            var rate = this._load_task.progress.current / this._load_task.progress.total;
+            rate = Math.floor(rate * 1000) / 1000;
+            console.log(rate);
+        }
     };
     PanelController.prototype.onDestroy = function () {
     };

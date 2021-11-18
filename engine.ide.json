@@ -65,7 +65,7 @@
 	"engineProjectId": "5a545f557fd0df9b581c0a800a",
 	"engineConfigJson": {
 		"globalSetting": {
-			"baseURL": "file:///assets/",
+			"baseURL": "cloud://beamiter-6gligihg7e8e488b.6265-beamiter-6gligihg7e8e488b-1308363547/",
 			"designWidth": 1280,
 			"designHeight": 720,
 			"logFilter": "",
