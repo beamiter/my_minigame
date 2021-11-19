@@ -35,9 +35,6 @@ var PanelController = (function (_super) {
         this._load_task = engine_1.default.loader.load("scenes/mv.scene");
         this._load_task.promise.then(function (scene) {
             engine_1.default.game.playScene(scene);
-            console.log(that.entity.name, that.entity.transform2D.childrenCount);
-            var node = that.entity.transform2D.findChildByName('Sprite_1');
-            console.log(node.entity.name);
         });
     };
     PanelController.prototype.onUpdate = function (dt) {

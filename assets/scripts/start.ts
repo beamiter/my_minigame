@@ -6,9 +6,16 @@ export default class start extends engine.Script {
     type: engine.TypeNames.String
   })
   public name: string = "myname"
-  
-  public onAwake() {
 
+  private _scene_loaded = false;
+
+  public onAwake() {
+    const that = this;
+    const load_task = engine.loader.load("scenes/mv.scene");
+    load_task.promise.then(function (scene: Scene) {
+      engine.game.playScene(scene);
+      that._scene_loaded = true;
+    });
   }
   public onUpdate(dt) {
 
@@ -17,6 +24,9 @@ export default class start extends engine.Script {
 
   }
   public onTouchEnd(touch: TouchInputComponent, event: TouchInputEvent) {
+    if (this._scene_loaded === false) {
+      return;
+    }
     this.entity.transform2D.parent.entity.destroyImmediate();
   }
 }

@@ -10,10 +10,10 @@ export default class BodyController extends engine.Script {
   private _canMove: boolean = false;
   private _curTime: number = 0.0;
   private _epochTime: number = 0.5;
-  private _yCoordinate: number = 0.55;
+  private _yCoordinate: number = 0.35;
   // 0: x, 1: y, 2: z.
   private _rotateAxis: number = 0;
-  private _jumpHeight: number = 2;
+  private _jumpHeight: number = 1.5;
   private _deltaPos: Vector3 = new Vector3();
   private _targetPos: Vector3 = new Vector3();
 
@@ -44,10 +44,10 @@ export default class BodyController extends engine.Script {
       return;
     }
     // This is for moving logic.
-    if (this._curTime <= this._epochTime) {
+    if (this._curTime < this._epochTime) {
       this._curTime += dt;
       let ratio = dt / this._epochTime;
-      let dir = Math.sign(this._epochTime / 2 - this._curTime);
+      let dir: number = (this._curTime <= this._epochTime / 2.0 + 0.01)? 1.0 : -1.0;
       // this.entity.transform.rotate(Vector3.createFromNumber(0, 0, 360 * ratio), true, false);
       this.entity.transform.position.add(
         Vector3.createFromNumber(
