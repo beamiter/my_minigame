@@ -10,11 +10,12 @@ var BodyController = (function (_super) {
         _this._canMove = false;
         _this._curTime = 0.0;
         _this._epochTime = 0.5;
-        _this._yCoordinate = 0.55;
+        _this._yCoordinate = 0.35;
         _this._rotateAxis = 0;
-        _this._jumpHeight = 2;
+        _this._jumpHeight = 1.5;
         _this._deltaPos = new engine_1.Vector3();
         _this._targetPos = new engine_1.Vector3();
+        _this._previousPos = new engine_1.Vector3();
         return _this;
     }
     Object.defineProperty(BodyController.prototype, "targetPos", {
@@ -24,6 +25,7 @@ var BodyController = (function (_super) {
         set: function (pos) {
             this._targetPos = pos.clone();
             this._targetPos.y = this._yCoordinate;
+            this._previousPos = this.entity.transform.position.clone();
             this._targetPos.sub(this.entity.transform.position, this._deltaPos);
         },
         enumerable: false,
@@ -42,11 +44,11 @@ var BodyController = (function (_super) {
         if (!this._canMove) {
             return;
         }
-        if (this._curTime <= this._epochTime) {
+        if (this._curTime < this._epochTime) {
             this._curTime += dt;
-            var ratio = dt / this._epochTime;
-            var dir = Math.sign(this._epochTime / 2 - this._curTime);
-            this.entity.transform.position.add(engine_1.Vector3.createFromNumber(this._deltaPos.x * ratio, dir * this._jumpHeight * ratio, this._deltaPos.z * ratio), this.entity.transform.position);
+            var ratio = this._curTime / this._epochTime;
+            var dir = (this._curTime <= this._epochTime / 2.0 + 0.01) ? 1.0 : -1.0;
+            this._previousPos.add(engine_1.Vector3.createFromNumber(this._deltaPos.x * ratio, dir * this._jumpHeight * ratio * 0, this._deltaPos.z * ratio), this.entity.transform.position);
         }
         else {
             this.entity.transform.position = this._targetPos;
