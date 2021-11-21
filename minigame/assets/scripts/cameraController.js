@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var engine_1 = require("engine");
+var pictureController_1 = require("./pictureController");
 var CameraController = (function (_super) {
     tslib_1.__extends(CameraController, _super);
     function CameraController() {
@@ -22,6 +23,7 @@ var CameraController = (function (_super) {
         this._deltaPos.z = this._targetAnchor.z - prevPos.z;
         this.entity.transform.position.add(this._deltaPos, this._targetPos);
         this._canMove = true;
+        this._pictureController.hidden = !this._pictureController.hidden;
     };
     Object.defineProperty(CameraController.prototype, "targetAnchor", {
         get: function () {
@@ -58,6 +60,11 @@ var CameraController = (function (_super) {
             type: engine_1.default.TypeNames.String
         })
     ], CameraController.prototype, "name", void 0);
+    tslib_1.__decorate([
+        engine_1.default.decorators.property({
+            type: pictureController_1.default
+        })
+    ], CameraController.prototype, "_pictureController", void 0);
     CameraController = tslib_1.__decorate([
         engine_1.default.decorators.serialize("cameraController")
     ], CameraController);

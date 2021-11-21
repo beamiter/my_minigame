@@ -40,6 +40,9 @@ var BodyController = (function (_super) {
             _this.onTouchEnd();
         });
     };
+    BodyController.prototype.hightFunc = function (t) {
+        return this._jumpHeight * Math.sin((0.5 * Math.PI / (this._epochTime + 0.01)) * t);
+    };
     BodyController.prototype.onUpdate = function (dt) {
         if (!this._canMove) {
             return;
@@ -47,8 +50,7 @@ var BodyController = (function (_super) {
         if (this._curTime < this._epochTime) {
             this._curTime += dt;
             var ratio = this._curTime / this._epochTime;
-            var dir = (this._curTime <= this._epochTime / 2.0 + 0.01) ? 1.0 : -1.0;
-            this._previousPos.add(engine_1.Vector3.createFromNumber(this._deltaPos.x * ratio, dir * this._jumpHeight * ratio * 0, this._deltaPos.z * ratio), this.entity.transform.position);
+            this._previousPos.add(engine_1.Vector3.createFromNumber(this._deltaPos.x * ratio, this.hightFunc(ratio), this._deltaPos.z * ratio), this.entity.transform.position);
         }
         else {
             this.entity.transform.position = this._targetPos;

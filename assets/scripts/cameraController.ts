@@ -1,4 +1,5 @@
 import engine, {Vector3} from "engine";
+import PictureController from "./pictureController";
 
 @engine.decorators.serialize("cameraController")
 export default class CameraController extends engine.Script {
@@ -6,6 +7,10 @@ export default class CameraController extends engine.Script {
     type: engine.TypeNames.String
   })
   public name: string = "myname"
+  @engine.decorators.property({
+    type: PictureController
+  })
+  public _pictureController: PictureController;
 
   private _targetAnchor: Vector3 = Vector3.createFromNumber(0, 0, 0);
   private _deltaPos: Vector3 = Vector3.createFromNumber(0, 0, 0);
@@ -24,8 +29,9 @@ export default class CameraController extends engine.Script {
     // Update target pos.
     this.entity.transform.position.add(this._deltaPos, this._targetPos);
     this._canMove = true;
-  }
 
+    this._pictureController.hidden = !this._pictureController.hidden;
+  }
   // @ts-ignore
   set targetAnchor(pos: Vector3) {
     this._targetAnchor = pos.clone();
@@ -39,7 +45,7 @@ export default class CameraController extends engine.Script {
   public onAwake() {
   }
 
-  public onUpdate(dt) {
+  public onUpdate(dt: number) {
     if (!this._canMove) {
       return;
     }

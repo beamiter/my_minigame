@@ -41,6 +41,10 @@ export default class BodyController extends engine.Script {
     });
   }
 
+  public hightFunc(t: number) {
+    return this._jumpHeight * Math.sin((0.5 * Math.PI / (this._epochTime + 0.01)) * t);
+  }
+
   public onUpdate(dt) {
     if (!this._canMove) {
       return;
@@ -49,11 +53,10 @@ export default class BodyController extends engine.Script {
     if (this._curTime < this._epochTime) {
       this._curTime += dt;
       let ratio = this._curTime / this._epochTime;
-      let dir: number = (this._curTime <= this._epochTime / 2.0 + 0.01) ? 1.0 : -1.0;
       // this.entity.transform.rotate(Vector3.createFromNumber(0, 0, 360 * ratio), true, false);
 
       this._previousPos.add(Vector3.createFromNumber(
-        this._deltaPos.x * ratio, dir * this._jumpHeight * ratio * 0, this._deltaPos.z * ratio),
+        this._deltaPos.x * ratio, this.hightFunc(ratio), this._deltaPos.z * ratio),
         this.entity.transform.position);
       // let ratio = dt / this._epochTime;
       // this.entity.transform.position.add(

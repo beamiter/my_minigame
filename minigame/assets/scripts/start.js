@@ -11,19 +11,26 @@ var start = (function (_super) {
         return _this;
     }
     start.prototype.onAwake = function () {
+        this._label = this.entity.transform2D.findChildByName('UILabel').entity.getComponent(engine_1.default.UILabel);
+        this._load_task = engine_1.default.loader.load("scenes/game.scene", { cacheable: true });
         var that = this;
-        var load_task = engine_1.default.loader.load("scenes/mv.scene");
-        load_task.promise.then(function (scene) {
+        this._load_task.promise.then(function (scene) {
             engine_1.default.game.playScene(scene);
+            console.log('Scene loaded.');
             that._scene_loaded = true;
+            that._label.text = '开始/Start';
         });
     };
     start.prototype.onUpdate = function (dt) {
+        if (this._scene_loaded) {
+            return;
+        }
+        this._label.text = ('Loading ' + Math.floor(this._load_task.progress.current / this._load_task.progress.total * 100) + '%');
     };
     start.prototype.onDestroy = function () {
     };
     start.prototype.onTouchEnd = function (touch, event) {
-        if (this._scene_loaded === false) {
+        if (!this._scene_loaded) {
             return;
         }
         this.entity.transform2D.parent.entity.destroyImmediate();
