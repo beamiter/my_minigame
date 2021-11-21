@@ -12,6 +12,7 @@ export default class PictureController extends engine.Script {
     private _curTime: number = 0;
     private _deltaPos: Vector3 = Vector3.createFromNumber(0, 0, 0);
     private _targetPos: Vector3 = Vector3.createFromNumber(0, 0, 0);
+    private _previousPos: Vector3 = new Vector3();
     private _id: number = 0;
     private _uiSprite: engine.UISprite;
     private _child: engine.Entity;
@@ -21,13 +22,13 @@ export default class PictureController extends engine.Script {
     set hidden(h: boolean) {
         this._hidden = h;
         this._canMove = true;
-        let prevPos = this._child.transform.position;
+        this._previousPos = this._child.transform.position.clone();
         if (this._hidden) {
-            this._targetPos = Vector3.createFromNumber(0, -2, 0);
+            this._targetPos = Vector3.createFromNumber(0, -2.5, 0);
         } else {
             this._targetPos = Vector3.createFromNumber(0, 0, 0);
         }
-        this._targetPos.sub(prevPos, this._deltaPos);
+        this._targetPos.sub(this._previousPos, this._deltaPos);
     }
     // @ts-ignore
     get hidden() {
@@ -47,7 +48,7 @@ export default class PictureController extends engine.Script {
         }
 
         // This is for moving logic.
-        if (this._curTime > this._epochTime) {
+        if (this._curTime >= this._epochTime) {
             this._child.transform.position = this._targetPos;
             this._curTime = 0;
             this._canMove = false;
@@ -58,19 +59,13 @@ export default class PictureController extends engine.Script {
                     console.log("Use picture: ", pic_name);
                     this._uiSprite.spriteFrame = asset;
                 });
-                this._child.transform.scale = Vector3.createFromNumber(0.001, 0.001, 0.001);
-            } else {
-                this._child.transform.scale = Vector3.createFromNumber(1, 1, 1);
             }
         } else {
             this._curTime += dt;
-            let ratio = dt / this._epochTime;
-            let progress = this._hidden ? (1 - this._curTime / this._epochTime) : (this._curTime / this._epochTime);
-            this._child.transform.position.add(
-                Vector3.createFromNumber(
-                    this._deltaPos.x * ratio, this._deltaPos.y * ratio, this._deltaPos.z * ratio),
+            const ratio = this._curTime / this._epochTime;
+            this._previousPos.add(Vector3.createFromNumber(
+                this._deltaPos.x * ratio, this._deltaPos.y * ratio, this._deltaPos.z * ratio),
                 this._child.transform.position);
-            this._child.transform.scale = Vector3.createFromNumber(progress, progress, progress);
         }
     }
     public onDestroy() {
