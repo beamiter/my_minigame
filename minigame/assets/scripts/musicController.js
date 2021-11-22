@@ -26,6 +26,10 @@ var MusicController = (function (_super) {
             _this.changeMusic();
         });
         this._bgm = this.entity.transform.findChildByName('BGM').entity.getComponent(engine_1.default.AudioSource);
+        engine_1.default.loader.load('musics/0.mp3', { cacheable: true }).promise.then(function (asset) {
+            console.log('Loaded BGM');
+            _this._bgm.clip = asset;
+        });
         var _loop_1 = function (song) {
             engine_1.default.loader.load(song, { cacheable: true }).promise.then(function (asset) {
                 console.log('Loaded music: ', song);

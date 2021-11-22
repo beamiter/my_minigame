@@ -28,6 +28,10 @@ export default class MusicController extends engine.Script {
             this.changeMusic();
         });
         this._bgm = this.entity.transform.findChildByName('BGM').entity.getComponent(engine.AudioSource);
+        engine.loader.load('musics/0.mp3', { cacheable: true }).promise.then((asset: engine.AudioClip) => {
+            console.log('Loaded BGM');
+            this._bgm.clip = asset;
+        })
         // Pre-load.
         for (let song of this._album) {
             engine.loader.load(song, { cacheable: true }).promise.then((asset: engine.AudioClip) => {
