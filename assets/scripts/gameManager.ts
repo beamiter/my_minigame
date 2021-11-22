@@ -56,7 +56,21 @@ export default class gameManager extends engine.Script {
         Vector3.createFromNumber(255, 102, 0).scale(1 / 255),
     ];
 
+    private _album: string[] = [];
+    private _spriteMap: Map<string, engine.SpriteFrame> = new Map();
+
     public onAwake() {
+        for (let i = 0; i < 8; ++i) {
+            const frame_name = 'pictures/' + i + '.spriteframe';
+            this._album.push(frame_name);
+        }
+        for (let pic_name of this._album) {
+            engine.loader.load(pic_name, { cacheable: true }).promise.then((asset: engine.SpriteFrame) => {
+                console.log("Loaded picture: ", pic_name);
+                this._spriteMap.set(pic_name, asset);
+            });
+        }
+
         // Sample pos transition.
         for (let i = 1; i <= 3; ++i) {
             this._posTransition.push(Vector3.createFromNumber(-i * 0.3 - 1, 0, 0));
@@ -108,32 +122,31 @@ export default class gameManager extends engine.Script {
         stone.transform.position.y = 0;
 
         // Select sprite frame randomly.
-        let frame_id = Math.floor(Math.random() * 8);
-        const frame_name = 'pictures/' + frame_id + '.spriteframe';
-        engine.loader.load(frame_name).promise.then((asset: SpriteFrame) => {
-            // Update sprite async.
+        const pic_name = this._album[Math.floor(Math.random() * this._album.length)];
+        // console.log(this._spriteMap);
+        if (this._spriteMap.has(pic_name)) {
             const uiSpriteComponent: engine.UISprite =
                 stone.transform.findChildByName('illustrator').entity.getComponent(engine.UISprite);
-            uiSpriteComponent.spriteFrame = asset;
+            uiSpriteComponent.spriteFrame = this._spriteMap.get(pic_name);
+        }
 
-            // Update color.
-            const meshRenderer: engine.MeshRenderer = stone.getComponent(engine.MeshRenderer);
-            let color_id = Math.floor(Math.random() * this._myColor.length);
-            meshRenderer.material.setVector("_Color", this._myColor[color_id]);
+        // Update color.
+        const meshRenderer: engine.MeshRenderer = stone.getComponent(engine.MeshRenderer);
+        let color_id = Math.floor(Math.random() * this._myColor.length);
+        meshRenderer.material.setVector("_Color", this._myColor[color_id]);
 
-            // Update transform.
-            that.transform.addChild(stone.transform);
-            this._transformPool.push(stone);
-            if (this._transformPool.length > 6) {
-                const old_node = this._transformPool.shift();
-                that.transform.removeChild(old_node.transform);
-                old_node.destroyImmediate();
-            }
-            // Body
-            this._bodyController.targetPos = stone.transform.position;
-            // Camera
-            this._cameraController.shiftCameraPos(this._bodyController.targetPos.add(prevTargetPos).scale(0.5));
-        });
+        // Update transform.
+        that.transform.addChild(stone.transform);
+        this._transformPool.push(stone);
+        if (this._transformPool.length > 6) {
+            const old_node = this._transformPool.shift();
+            that.transform.removeChild(old_node.transform);
+            old_node.destroyImmediate();
+        }
+        // Body
+        this._bodyController.targetPos = stone.transform.position;
+        // Camera
+        this._cameraController.shiftCameraPos(this._bodyController.targetPos.add(prevTargetPos).scale(0.5));
 
     }
 

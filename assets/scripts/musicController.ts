@@ -15,10 +15,11 @@ export default class MusicController extends engine.Script {
     ];
 
     private _bgm: engine.AudioSource;
-    private _episode: engine.AudioSource;
     private _pause_bg: boolean = false;
     private _episode_id: number = 0;
-    private _episode_name: string;
+    private _episode_map: Map<string, engine.AudioClip> = new Map();
+    private _audio = wx.createInnerAudioContext();
+    private _needChange: boolean = false;
 
     public onAwake() {
         engine.game.markAsPersist(this.entity);
@@ -27,22 +28,37 @@ export default class MusicController extends engine.Script {
             this.changeMusic();
         });
         this._bgm = this.entity.transform.findChildByName('BGM').entity.getComponent(engine.AudioSource);
-        this._episode = this.entity.transform.findChildByName('Episode').entity.getComponent(engine.AudioSource);
-        // No need pre-load.
-        // for (let song of this._album) {
-        //     engine.loader.load(song, { cacheable: true }).promise.then(_ => {
-        //         console.log(song, ' loaded');
-        //     })
-        // }
+        // Pre-load.
+        for (let song of this._album) {
+            engine.loader.load(song, { cacheable: true }).promise.then((asset: engine.AudioClip) => {
+                console.log('Loaded music: ', song);
+                this._episode_map.set(song, asset);
+            })
+        }
+        // this._audio.autoplay = true;
+        this._audio.loop = true;
+        this._audio.onCanplay(() => {
+            console.log('Will play this song: ', this._album[this._episode_id]);
+            this._audio.play();
+            this._bgm.pause();
+            this._episode_id = (this._episode_id + 1) % this._album.length;
+        });
     }
     public onUpdate(dt: number) {
+        if (this._needChange) {
+            const episode_name = this._album[this._episode_id];
+            if (this._episode_map.has(episode_name)) {
+                this._needChange = false;
+                this._audio.src = this._episode_map.get(episode_name).fileSrc;
+            } else {
+                console.log(episode_name, ' not valid');
+            }
+        }
         if (!this._pause_bg) {
             if (this._bgm.canplay && !this._bgm.playing) {
                 this._bgm.play();
-                this._episode.pause();
+                this._audio.pause();
             }
-        } else {
-            this._episode.playing && this._bgm.pause();
         }
     }
     public onDestroy() {
@@ -50,28 +66,9 @@ export default class MusicController extends engine.Script {
 
     public changeMusic() {
         this._pause_bg = !this._pause_bg;
-        const util = (asset: engine.AudioClip) => {
-            this._episode.audioSourceNode.destroy();
-            this._episode = this.entity.addComponent(engine.AudioSource);
-            this._episode_name = this._album[this._episode_id];
-            this._episode_id = (this._episode_id + 1) % this._album.length;
-            this._episode.clip = asset;
-            this._episode.loop = true;
-            console.log('Will play this song: ', this._episode_name);
-            if (this._episode.clip === null) {
-                console.log(this._episode_name, 'not valid');
-            }
-        };
         if (this._pause_bg) {
-            if (0) {
-                // 1. Sync.
-                util(engine.loader.getAsset(this._episode_name));
-            } else {
-                // 2. Async.
-                engine.loader.load(this._album[this._episode_id]).promise.then((asset: engine.AudioClip) => {
-                    util(asset);
-                });
-            }
+            // console.log(this._episode_map);
+            this._needChange = true;
         }
     }
 

@@ -14,6 +14,9 @@ var MusicController = (function (_super) {
         ];
         _this._pause_bg = false;
         _this._episode_id = 0;
+        _this._episode_map = new Map();
+        _this._audio = wx.createInnerAudioContext();
+        _this._needChange = false;
         return _this;
     }
     MusicController.prototype.onAwake = function () {
@@ -23,45 +26,48 @@ var MusicController = (function (_super) {
             _this.changeMusic();
         });
         this._bgm = this.entity.transform.findChildByName('BGM').entity.getComponent(engine_1.default.AudioSource);
-        this._episode = this.entity.transform.findChildByName('Episode').entity.getComponent(engine_1.default.AudioSource);
+        var _loop_1 = function (song) {
+            engine_1.default.loader.load(song, { cacheable: true }).promise.then(function (asset) {
+                console.log('Loaded music: ', song);
+                _this._episode_map.set(song, asset);
+            });
+        };
+        for (var _i = 0, _a = this._album; _i < _a.length; _i++) {
+            var song = _a[_i];
+            _loop_1(song);
+        }
+        this._audio.loop = true;
+        this._audio.onCanplay(function () {
+            console.log('Will play this song: ', _this._album[_this._episode_id]);
+            _this._audio.play();
+            _this._bgm.pause();
+            _this._episode_id = (_this._episode_id + 1) % _this._album.length;
+        });
     };
     MusicController.prototype.onUpdate = function (dt) {
+        if (this._needChange) {
+            var episode_name = this._album[this._episode_id];
+            if (this._episode_map.has(episode_name)) {
+                this._needChange = false;
+                this._audio.src = this._episode_map.get(episode_name).fileSrc;
+            }
+            else {
+                console.log(episode_name, ' not valid');
+            }
+        }
         if (!this._pause_bg) {
             if (this._bgm.canplay && !this._bgm.playing) {
                 this._bgm.play();
-                this._episode.pause();
+                this._audio.pause();
             }
-        }
-        else {
-            this._episode.playing && this._bgm.pause();
         }
     };
     MusicController.prototype.onDestroy = function () {
     };
     MusicController.prototype.changeMusic = function () {
-        var _this = this;
         this._pause_bg = !this._pause_bg;
-        var util = function (asset) {
-            _this._episode.audioSourceNode.destroy();
-            _this._episode = _this.entity.addComponent(engine_1.default.AudioSource);
-            _this._episode_name = _this._album[_this._episode_id];
-            _this._episode_id = (_this._episode_id + 1) % _this._album.length;
-            _this._episode.clip = asset;
-            _this._episode.loop = true;
-            console.log('Will play this song: ', _this._episode_name);
-            if (_this._episode.clip === null) {
-                console.log(_this._episode_name, 'not valid');
-            }
-        };
         if (this._pause_bg) {
-            if (0) {
-                util(engine_1.default.loader.getAsset(this._episode_name));
-            }
-            else {
-                engine_1.default.loader.load(this._album[this._episode_id]).promise.then(function (asset) {
-                    util(asset);
-                });
-            }
+            this._needChange = true;
         }
     };
     tslib_1.__decorate([

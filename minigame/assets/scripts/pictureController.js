@@ -16,6 +16,8 @@ var PictureController = (function (_super) {
         _this._previousPos = new engine_1.Vector3();
         _this._id = 0;
         _this._album = [];
+        _this._spriteMap = new Map();
+        _this._needChange = false;
         return _this;
     }
     Object.defineProperty(PictureController.prototype, "hidden", {
@@ -38,28 +40,40 @@ var PictureController = (function (_super) {
         configurable: true
     });
     PictureController.prototype.onAwake = function () {
+        var _this = this;
         this._child = this.entity.transform.findChildByName('Picture').entity;
         this._uiSprite = this._child.getComponent(engine_1.default.UISprite);
         for (var i = 0; i < 45; ++i) {
             this._album.push('pictures/m' + i + '.spriteframe');
         }
+        var _loop_1 = function (pic_name) {
+            engine_1.default.loader.load(pic_name, { cacheable: true }).promise.then(function (asset) {
+                console.log("Loaded picture: ", pic_name);
+                _this._spriteMap.set(pic_name, asset);
+            });
+        };
+        for (var _i = 0, _a = this._album; _i < _a.length; _i++) {
+            var pic_name = _a[_i];
+            _loop_1(pic_name);
+        }
     };
     PictureController.prototype.onUpdate = function (dt) {
-        var _this = this;
+        if (this._needChange) {
+            var pic_name = this._album[this._id];
+            if (this._spriteMap.has(pic_name)) {
+                this._needChange = false;
+                this._uiSprite.spriteFrame = this._spriteMap.get(pic_name);
+            }
+        }
         if (!this._canMove) {
             return;
         }
         if (this._curTime >= this._epochTime) {
-            this._child.transform.position = this._targetPos;
             this._curTime = 0;
             this._canMove = false;
             if (this._hidden) {
-                var pic_name_1 = this._album[this._id];
                 this._id = (this._id + 1) % this._album.length;
-                engine_1.default.loader.load(pic_name_1).promise.then(function (asset) {
-                    console.log("Use picture: ", pic_name_1);
-                    _this._uiSprite.spriteFrame = asset;
-                });
+                this._needChange = true;
             }
         }
         else {

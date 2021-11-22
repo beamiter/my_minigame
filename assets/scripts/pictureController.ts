@@ -17,6 +17,8 @@ export default class PictureController extends engine.Script {
     private _uiSprite: engine.UISprite;
     private _child: engine.Entity;
     private _album: string[] = [];
+    private _spriteMap: Map<string, engine.SpriteFrame> = new Map();
+    private _needChange: boolean = false;
 
     // @ts-ignore
     set hidden(h: boolean) {
@@ -41,24 +43,35 @@ export default class PictureController extends engine.Script {
         for (let i = 0; i < 45; ++i) {
             this._album.push('pictures/m' + i + '.spriteframe');
         }
+        for (let pic_name of this._album) {
+            engine.loader.load(pic_name, { cacheable: true }).promise.then((asset: engine.SpriteFrame) => {
+                console.log("Loaded picture: ", pic_name);
+                this._spriteMap.set(pic_name, asset);
+            });
+        }
     }
     public onUpdate(dt: number) {
+        if (this._needChange) {
+            // console.log(this._spriteMap);
+            const pic_name = this._album[this._id];
+            if (this._spriteMap.has(pic_name)) {
+                // Change succeed.
+                this._needChange = false;
+                this._uiSprite.spriteFrame = this._spriteMap.get(pic_name);
+            }
+        }
         if (!this._canMove) {
             return;
         }
 
         // This is for moving logic.
         if (this._curTime >= this._epochTime) {
-            this._child.transform.position = this._targetPos;
+            // this._child.transform.position = this._targetPos;
             this._curTime = 0;
             this._canMove = false;
             if (this._hidden) {
-                const pic_name = this._album[this._id];
                 this._id = (this._id + 1) % this._album.length;
-                engine.loader.load(pic_name).promise.then((asset: engine.SpriteFrame) => {
-                    console.log("Use picture: ", pic_name);
-                    this._uiSprite.spriteFrame = asset;
-                });
+                this._needChange = true;
             }
         } else {
             this._curTime += dt;

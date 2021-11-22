@@ -39,10 +39,26 @@ var gameManager = (function (_super) {
             engine_1.Vector3.createFromNumber(51, 102, 153).scale(1 / 255),
             engine_1.Vector3.createFromNumber(255, 102, 0).scale(1 / 255),
         ];
+        _this._album = [];
+        _this._spriteMap = new Map();
         return _this;
     }
     gameManager.prototype.onAwake = function () {
         var _this = this;
+        for (var i = 0; i < 8; ++i) {
+            var frame_name = 'pictures/' + i + '.spriteframe';
+            this._album.push(frame_name);
+        }
+        var _loop_1 = function (pic_name) {
+            engine_1.default.loader.load(pic_name, { cacheable: true }).promise.then(function (asset) {
+                console.log("Loaded picture: ", pic_name);
+                _this._spriteMap.set(pic_name, asset);
+            });
+        };
+        for (var _i = 0, _a = this._album; _i < _a.length; _i++) {
+            var pic_name = _a[_i];
+            _loop_1(pic_name);
+        }
         for (var i = 1; i <= 3; ++i) {
             this._posTransition.push(engine_1.Vector3.createFromNumber(-i * 0.3 - 1, 0, 0));
             this._posTransition.push(engine_1.Vector3.createFromNumber(0, 0, i * 0.3 + 1));
@@ -68,7 +84,6 @@ var gameManager = (function (_super) {
         this.initRoad();
     };
     gameManager.prototype.addNewStone = function (that) {
-        var _this = this;
         var prevTargetPos = this._bodyController.targetPos.clone();
         var choice = Math.floor(Math.random() * 2);
         var prefab = choice ? this._cubePrefab : this._cylinderPrefab;
@@ -76,24 +91,23 @@ var gameManager = (function (_super) {
         var pos_id = Math.floor(Math.random() * 6);
         stone.transform.position = this._bodyController.targetPos.add(this._posTransition[pos_id]);
         stone.transform.position.y = 0;
-        var frame_id = Math.floor(Math.random() * 8);
-        var frame_name = 'pictures/' + frame_id + '.spriteframe';
-        engine_1.default.loader.load(frame_name).promise.then(function (asset) {
+        var pic_name = this._album[Math.floor(Math.random() * this._album.length)];
+        if (this._spriteMap.has(pic_name)) {
             var uiSpriteComponent = stone.transform.findChildByName('illustrator').entity.getComponent(engine_1.default.UISprite);
-            uiSpriteComponent.spriteFrame = asset;
-            var meshRenderer = stone.getComponent(engine_1.default.MeshRenderer);
-            var color_id = Math.floor(Math.random() * _this._myColor.length);
-            meshRenderer.material.setVector("_Color", _this._myColor[color_id]);
-            that.transform.addChild(stone.transform);
-            _this._transformPool.push(stone);
-            if (_this._transformPool.length > 6) {
-                var old_node = _this._transformPool.shift();
-                that.transform.removeChild(old_node.transform);
-                old_node.destroyImmediate();
-            }
-            _this._bodyController.targetPos = stone.transform.position;
-            _this._cameraController.shiftCameraPos(_this._bodyController.targetPos.add(prevTargetPos).scale(0.5));
-        });
+            uiSpriteComponent.spriteFrame = this._spriteMap.get(pic_name);
+        }
+        var meshRenderer = stone.getComponent(engine_1.default.MeshRenderer);
+        var color_id = Math.floor(Math.random() * this._myColor.length);
+        meshRenderer.material.setVector("_Color", this._myColor[color_id]);
+        that.transform.addChild(stone.transform);
+        this._transformPool.push(stone);
+        if (this._transformPool.length > 6) {
+            var old_node = this._transformPool.shift();
+            that.transform.removeChild(old_node.transform);
+            old_node.destroyImmediate();
+        }
+        this._bodyController.targetPos = stone.transform.position;
+        this._cameraController.shiftCameraPos(this._bodyController.targetPos.add(prevTargetPos).scale(0.5));
     };
     gameManager.prototype.onUpdate = function (dt) {
     };
