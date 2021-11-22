@@ -145,8 +145,8 @@ function getRegisterPaths(registerInfos) {
     "platform": [
       "default"
     ],
-    "buildin": "register_80ca45b8.json",
-    "idePack": "register_3cc0ff44.json"
+    "buildin": "register_65f0ebb6.json",
+    "idePack": "register_36720855.json"
   }
 ]
     var registerResult = getRegisterPaths(registerInfos)
@@ -186,7 +186,7 @@ function getRegisterPaths(registerInfos) {
          */
         
     var scenesPromises = [
-      engine.loader.load("scenes/bgm.scene", { useFrameSystem: false }).promise,
+      engine.loader.load("scenes/game.scene", { useFrameSystem: false }).promise,
       engine.loader.load("scenes/panel.scene", { useFrameSystem: false }).promise
     ];
     engine.LitePromise.all(scenesPromises).then(function(scenes) {
