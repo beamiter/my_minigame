@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var engine_1 = require("engine");
-var startController_1 = require("./startController");
 var PanelController = (function (_super) {
     tslib_1.__extends(PanelController, _super);
     function PanelController() {
@@ -21,6 +20,9 @@ var PanelController = (function (_super) {
         _this._needChange = false;
         _this._episode_id = 0;
         _this._episode_map = new Map();
+        _this._startButton = _this.entity.transform2D.findChildByName('Button').entity;
+        _this._background = _this.entity.transform2D.findChildByName('Background').entity;
+        _this._ready = false;
         return _this;
     }
     PanelController.prototype.onTouchStart = function (touch, event) {
@@ -40,6 +42,14 @@ var PanelController = (function (_super) {
     };
     PanelController.prototype.onAwake = function () {
         var _this = this;
+        var startComponent = this._startButton.getComponent(engine_1.default.TouchInputComponent);
+        startComponent.onClick.add(function (touch, event) {
+            if (!_this._ready) {
+                return;
+            }
+            _this._background.active = false;
+            _this._startButton.active = false;
+        });
         engine_1.default.game.customEventEmitter.on('JUMP_END', function () {
             _this.changeMusic();
         });
@@ -51,9 +61,11 @@ var PanelController = (function (_super) {
             console.log('Will play BGM');
             _this._bgm.play();
             _this._audio.pause();
-            _this._startController.ready = true;
+            _this._ready = true;
+            var label = _this._startButton.transform2D.findChildByName('UILabel').entity.getComponent(engine_1.default.UILabel);
+            label.text = 'Start';
         });
-        engine_1.default.loader.load('musics/0.mp3', { cacheable: true }).promise.then(function (asset) {
+        engine_1.default.loader.load('musics/0.mp3', { cacheable: true, httpPriority: 100 }).promise.then(function (asset) {
             console.log('Loaded BGM');
             _this._bgm.src = asset.fileSrc;
         });
@@ -106,11 +118,6 @@ var PanelController = (function (_super) {
             type: engine_1.default.TypeNames.String
         })
     ], PanelController.prototype, "name", void 0);
-    tslib_1.__decorate([
-        engine_1.default.decorators.property({
-            type: startController_1.default
-        })
-    ], PanelController.prototype, "_startController", void 0);
     PanelController = tslib_1.__decorate([
         engine_1.default.decorators.serialize("panelController")
     ], PanelController);

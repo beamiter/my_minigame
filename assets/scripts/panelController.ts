@@ -1,6 +1,5 @@
 
 import engine, { TouchInputComponent, TouchInputEvent } from "engine";
-import StartController from "./startController";
 
 @engine.decorators.serialize("panelController")
 export default class PanelController extends engine.Script {
@@ -8,10 +7,6 @@ export default class PanelController extends engine.Script {
         type: engine.TypeNames.String
     })
     public name: string = "myname"
-    @engine.decorators.property({
-        type: StartController
-    })
-    public _startController: StartController;
 
     private _album: string[] = [
         'musics/1.mp3',
@@ -28,6 +23,9 @@ export default class PanelController extends engine.Script {
     private _needChange: boolean = false;
     private _episode_id: number = 0;
     private _episode_map: Map<string, engine.AudioClip> = new Map();
+    private _startButton: engine.Entity = this.entity.transform2D.findChildByName('Button').entity;
+    private _background: engine.Entity = this.entity.transform2D.findChildByName('Background').entity;
+    private _ready: boolean = false;
 
     public onTouchStart(touch: TouchInputComponent, event: TouchInputEvent) {
         // Check if input is enabled.
@@ -51,6 +49,17 @@ export default class PanelController extends engine.Script {
     }
 
     public onAwake() {
+        const startComponent: engine.TouchInputComponent = this._startButton.getComponent(engine.TouchInputComponent);
+        startComponent.onClick.add((touch, event) => {
+            if (!this._ready) {
+                return;
+            }
+            // const bgSprite: engine.UISprite = this._background.getComponent(engine.UISprite);
+            // bgSprite.alpha = 255;
+            this._background.active = false;
+            this._startButton.active = false;
+        });
+
         engine.game.customEventEmitter.on('JUMP_END', () => {
             // Change music.
             this.changeMusic();
@@ -66,9 +75,11 @@ export default class PanelController extends engine.Script {
             this._bgm.play();
             this._audio.pause();
             // Ready to start.
-            this._startController.ready = true;
+            this._ready = true;
+            const label: engine.UILabel = this._startButton.transform2D.findChildByName('UILabel').entity.getComponent(engine.UILabel);
+            label.text = 'Start';
         });
-        engine.loader.load('musics/0.mp3', { cacheable: true }).promise.then((asset: engine.AudioClip) => {
+        engine.loader.load('musics/0.mp3', { cacheable: true, httpPriority: 100 }).promise.then((asset: engine.AudioClip) => {
             console.log('Loaded BGM');
             this._bgm.src = asset.fileSrc;
         })
