@@ -8,7 +8,8 @@ var PictureController = (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "myname";
         _this._hidden = false;
-        _this._needUpdate = false;
+        _this._needVanish = false;
+        _this._needChange = false;
         _this._epochTime = 0.5;
         _this._curTime = 0;
         _this._id = 0;
@@ -24,7 +25,7 @@ var PictureController = (function (_super) {
             return this._hidden;
         },
         set: function (h) {
-            this._needUpdate = (h !== this._hidden);
+            this._needVanish = (h !== this._hidden);
             this._hidden = h;
             this._previousAlpha = this._uiSprite.alpha;
             if (this._hidden) {
@@ -44,27 +45,39 @@ var PictureController = (function (_super) {
         }
     };
     PictureController.prototype.onUpdate = function (dt) {
-        if (!this._needUpdate) {
+        var _this = this;
+        if (this._needVanish) {
+            this._curTime += dt;
+            if (this._curTime >= this._epochTime) {
+                this._curTime = 0;
+                this._needVanish = false;
+                this._uiSprite.alpha = this._targetAlpha;
+            }
+            else {
+                this._uiSprite.alpha = this._previousAlpha + this._curTime / this._epochTime * this._deltaAlpha;
+            }
             return;
         }
-        this._curTime += dt;
-        if (this._curTime >= this._epochTime) {
-            this._curTime = 0;
-            this._needUpdate = false;
-            this._uiSprite.alpha = this._targetAlpha;
-        }
-        else {
-            this._uiSprite.alpha = this._previousAlpha + this._curTime / this._epochTime * this._deltaAlpha;
+        if (this._needChange) {
+            this._needChange = false;
+            var pic_name_1 = this._album[this._id];
+            engine_1.default.loader.load(pic_name_1, { cacheable: true }).promise.then(function (asset) {
+                _this._uiSprite.spriteFrame = asset;
+                _this._uiSprite.entity.transform2D.size = engine_1.default.Vector2.createFromNumber(asset.rect.width, asset.rect.height);
+                if (asset.rect.width > asset.rect.height) {
+                    var ratio = asset.rect.height / asset.rect.width;
+                    _this._uiSprite.entity.transform2D.scale = engine_1.default.Vector2.createFromNumber(ratio, ratio);
+                }
+                else {
+                    _this._uiSprite.entity.transform2D.scale = engine_1.default.Vector2.createFromNumber(1, 1);
+                }
+                _this._id = (_this._id + 1) % _this._album.length;
+                console.log('Loaded picture: ', pic_name_1);
+            });
         }
     };
     PictureController.prototype.changePicture = function () {
-        var _this = this;
-        var pic_name = this._album[this._id];
-        engine_1.default.loader.load(pic_name, { cacheable: true }).promise.then(function (asset) {
-            console.log("Loaded picture: ", pic_name);
-            _this._uiSprite.spriteFrame = asset;
-            _this._id = (_this._id + 1) % _this._album.length;
-        });
+        this._needChange = true;
     };
     tslib_1.__decorate([
         engine_1.default.decorators.property({

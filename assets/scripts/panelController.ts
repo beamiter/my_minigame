@@ -19,8 +19,8 @@ export default class PanelController extends engine.Script {
         'musics/3.mp3',
     ];
 
-    private _enableInput: boolean = true;
-    private _start_triggered: boolean = true;
+    private _enableInput: boolean = false;
+    private _start_triggered: boolean = false;
 
     private _audio = wx.createInnerAudioContext();
     private _bgm = wx.createInnerAudioContext();
@@ -33,11 +33,14 @@ export default class PanelController extends engine.Script {
     private _ready: boolean = false;
 
     public onTouchStart(touch: TouchInputComponent, event: TouchInputEvent) {
-        this._pictureController.hidden = true;
         // Check if input is enabled.
         if (!this._enableInput) {
             return;
         }
+        // Hide first, load next.
+        this._pictureController.hidden = true;
+        this._pictureController.changePicture();
+
         this._start_triggered = true;
         engine.game.customEventEmitter.emit('TOUCH_START');
     }
@@ -60,13 +63,13 @@ export default class PanelController extends engine.Script {
             if (!this._ready) {
                 return;
             }
-            // const bgSprite: engine.UISprite = this._background.getComponent(engine.UISprite);
-            // bgSprite.alpha = 255;
             const uiSprite: engine.UISprite = this._background.getComponent(engine.UISprite);
             uiSprite.spriteFrame = null;
-            // this._background.active = false;
+            // Hide first, load next.
             this._pictureController.hidden = true;
+            this._pictureController.changePicture();
             this._startButton.active = false;
+            this._enableInput = true;
         });
 
         engine.game.customEventEmitter.on('JUMP_END', () => {

@@ -13,8 +13,8 @@ var PanelController = (function (_super) {
             'musics/2.mp3',
             'musics/3.mp3',
         ];
-        _this._enableInput = true;
-        _this._start_triggered = true;
+        _this._enableInput = false;
+        _this._start_triggered = false;
         _this._audio = wx.createInnerAudioContext();
         _this._bgm = wx.createInnerAudioContext();
         _this._pause_bg = false;
@@ -27,10 +27,11 @@ var PanelController = (function (_super) {
         return _this;
     }
     PanelController.prototype.onTouchStart = function (touch, event) {
-        this._pictureController.hidden = true;
         if (!this._enableInput) {
             return;
         }
+        this._pictureController.hidden = true;
+        this._pictureController.changePicture();
         this._start_triggered = true;
         engine_1.default.game.customEventEmitter.emit('TOUCH_START');
     };
@@ -52,7 +53,9 @@ var PanelController = (function (_super) {
             var uiSprite = _this._background.getComponent(engine_1.default.UISprite);
             uiSprite.spriteFrame = null;
             _this._pictureController.hidden = true;
+            _this._pictureController.changePicture();
             _this._startButton.active = false;
+            _this._enableInput = true;
         });
         engine_1.default.game.customEventEmitter.on('JUMP_END', function () {
             _this.changeMusic();

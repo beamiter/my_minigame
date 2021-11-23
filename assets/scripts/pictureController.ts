@@ -8,7 +8,8 @@ export default class PictureController extends engine.Script {
     public name: string = "myname"
 
     private _hidden: boolean = false;
-    private _needUpdate: boolean = false;
+    private _needVanish: boolean = false;
+    private _needChange: boolean = false;
     private _epochTime: number = 0.5;
     private _curTime: number = 0;
     private _id: number = 0;
@@ -20,7 +21,7 @@ export default class PictureController extends engine.Script {
 
     // @ts-ignore
     set hidden(h: boolean) {
-        this._needUpdate = (h !== this._hidden);
+        this._needVanish = (h !== this._hidden);
         this._hidden = h;
         this._previousAlpha = this._uiSprite.alpha;
         if (this._hidden) {
@@ -41,25 +42,40 @@ export default class PictureController extends engine.Script {
         }
     }
     public onUpdate(dt: number) {
-        if (!this._needUpdate) {
+        // Vanish has higher priority.
+        if (this._needVanish) {
+            // console.log(this._uiSprite.alpha);
+            this._curTime += dt;
+            if (this._curTime >= this._epochTime) {
+                this._curTime = 0;
+                this._needVanish = false;
+                this._uiSprite.alpha = this._targetAlpha;
+            } else {
+                this._uiSprite.alpha = this._previousAlpha + this._curTime / this._epochTime * this._deltaAlpha;
+            }
             return;
         }
-        // console.log(this._uiSprite.alpha);
-        this._curTime += dt;
-        if (this._curTime >= this._epochTime) {
-            this._curTime = 0;
-            this._needUpdate = false;
-            this._uiSprite.alpha = this._targetAlpha;
-        } else {
-            this._uiSprite.alpha = this._previousAlpha + this._curTime / this._epochTime * this._deltaAlpha;
+
+        // Change has lower priority.
+        if (this._needChange) {
+            this._needChange = false;
+            const pic_name = this._album[this._id];
+            engine.loader.load(pic_name, { cacheable: true }).promise.then((asset: engine.SpriteFrame) => {
+                this._uiSprite.spriteFrame = asset;
+                this._uiSprite.entity.transform2D.size = engine.Vector2.createFromNumber(
+                    asset.rect.width, asset.rect.height);
+                if (asset.rect.width > asset.rect.height) {
+                    const ratio = asset.rect.height / asset.rect.width;
+                    this._uiSprite.entity.transform2D.scale = engine.Vector2.createFromNumber(ratio, ratio);
+                } else {
+                    this._uiSprite.entity.transform2D.scale = engine.Vector2.createFromNumber(1, 1);
+                }
+                this._id = (this._id + 1) % this._album.length;
+                console.log('Loaded picture: ', pic_name);
+            });
         }
     }
     public changePicture() {
-        const pic_name = this._album[this._id];
-        engine.loader.load(pic_name, { cacheable: true }).promise.then((asset: engine.SpriteFrame) => {
-            console.log("Loaded picture: ", pic_name);
-            this._uiSprite.spriteFrame = asset;
-            this._id = (this._id + 1) % this._album.length;
-        });
+        this._needChange = true;
     }
 }
