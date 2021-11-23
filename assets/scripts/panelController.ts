@@ -1,5 +1,6 @@
 
 import engine, { TouchInputComponent, TouchInputEvent } from "engine";
+import PictureController from "./pictureController";
 
 @engine.decorators.serialize("panelController")
 export default class PanelController extends engine.Script {
@@ -7,6 +8,10 @@ export default class PanelController extends engine.Script {
         type: engine.TypeNames.String
     })
     public name: string = "myname"
+    @engine.decorators.property({
+        type: PictureController
+    })
+    public _pictureController: PictureController;
 
     private _album: string[] = [
         'musics/1.mp3',
@@ -28,6 +33,7 @@ export default class PanelController extends engine.Script {
     private _ready: boolean = false;
 
     public onTouchStart(touch: TouchInputComponent, event: TouchInputEvent) {
+        this._pictureController.hidden = true;
         // Check if input is enabled.
         if (!this._enableInput) {
             return;
@@ -56,13 +62,22 @@ export default class PanelController extends engine.Script {
             }
             // const bgSprite: engine.UISprite = this._background.getComponent(engine.UISprite);
             // bgSprite.alpha = 255;
-            this._background.active = false;
+            const uiSprite: engine.UISprite = this._background.getComponent(engine.UISprite);
+            uiSprite.spriteFrame = null;
+            // this._background.active = false;
+            this._pictureController.hidden = true;
             this._startButton.active = false;
         });
 
         engine.game.customEventEmitter.on('JUMP_END', () => {
             // Change music.
             this.changeMusic();
+            if (!this._needChange) {
+                // Change picture when idle.
+                this._pictureController.changePicture();
+            } else {
+                this._pictureController.hidden = false;
+            }
         });
 
         engine.game.customEventEmitter.on('CAMERA_MOVE', () => {

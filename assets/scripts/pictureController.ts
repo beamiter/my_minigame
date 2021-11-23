@@ -6,31 +6,29 @@ export default class PictureController extends engine.Script {
         type: engine.TypeNames.String
     })
     public name: string = "myname"
-    private _hidden: boolean = true;
+
+    private _hidden: boolean = false;
+    private _needUpdate: boolean = false;
     private _epochTime: number = 0.5;
-    private _canMove: boolean = false;
     private _curTime: number = 0;
-    private _deltaPos: Vector3 = Vector3.createFromNumber(0, 0, 0);
-    private _targetPos: Vector3 = Vector3.createFromNumber(0, 0, 0);
-    private _previousPos: Vector3 = new Vector3();
     private _id: number = 0;
-    private _uiSprite: engine.UISprite;
-    private _child: engine.Entity;
+    private _uiSprite: engine.UISprite = this.entity.getComponent(engine.UISprite);
     private _album: string[] = [];
-    private _spriteMap: Map<string, engine.SpriteFrame> = new Map();
-    private _needChange: boolean = false;
+    private _previousAlpha: number = 0;
+    private _targetAlpha: number = 0;
+    private _deltaAlpha: number = 0;
 
     // @ts-ignore
     set hidden(h: boolean) {
+        this._needUpdate = (h !== this._hidden);
         this._hidden = h;
-        this._canMove = true;
-        this._previousPos = this._child.transform.position.clone();
+        this._previousAlpha = this._uiSprite.alpha;
         if (this._hidden) {
-            this._targetPos = Vector3.createFromNumber(0, -2.5, 0);
+            this._targetAlpha = 0;
         } else {
-            this._targetPos = Vector3.createFromNumber(0, 0, 0);
+            this._targetAlpha = 255;
         }
-        this._targetPos.sub(this._previousPos, this._deltaPos);
+        this._deltaAlpha = this._targetAlpha - this._previousAlpha;
     }
     // @ts-ignore
     get hidden() {
@@ -38,50 +36,30 @@ export default class PictureController extends engine.Script {
     }
 
     public onAwake() {
-        this._child = this.entity.transform.findChildByName('Picture').entity;
-        this._uiSprite = this._child.getComponent(engine.UISprite);
         for (let i = 0; i < 45; ++i) {
             this._album.push('pictures/m' + i + '.spriteframe');
         }
-        for (let pic_name of this._album) {
-            engine.loader.load(pic_name, { cacheable: true }).promise.then((asset: engine.SpriteFrame) => {
-                console.log("Loaded picture: ", pic_name);
-                this._spriteMap.set(pic_name, asset);
-            });
-        }
     }
     public onUpdate(dt: number) {
-        if (this._needChange) {
-            // console.log(this._spriteMap);
-            const pic_name = this._album[this._id];
-            if (this._spriteMap.has(pic_name)) {
-                // Change succeed.
-                this._needChange = false;
-                this._uiSprite.spriteFrame = this._spriteMap.get(pic_name);
-            }
-        }
-        if (!this._canMove) {
+        if (!this._needUpdate) {
             return;
         }
-
-        // This is for moving logic.
+        // console.log(this._uiSprite.alpha);
+        this._curTime += dt;
         if (this._curTime >= this._epochTime) {
-            // this._child.transform.position = this._targetPos;
             this._curTime = 0;
-            this._canMove = false;
-            if (this._hidden) {
-                this._id = (this._id + 1) % this._album.length;
-                this._needChange = true;
-            }
+            this._needUpdate = false;
+            this._uiSprite.alpha = this._targetAlpha;
         } else {
-            this._curTime += dt;
-            const ratio = this._curTime / this._epochTime;
-            this._previousPos.add(Vector3.createFromNumber(
-                this._deltaPos.x * ratio, this._deltaPos.y * ratio, this._deltaPos.z * ratio),
-                this._child.transform.position);
+            this._uiSprite.alpha = this._previousAlpha + this._curTime / this._epochTime * this._deltaAlpha;
         }
     }
-    public onDestroy() {
-
+    public changePicture() {
+        const pic_name = this._album[this._id];
+        engine.loader.load(pic_name, { cacheable: true }).promise.then((asset: engine.SpriteFrame) => {
+            console.log("Loaded picture: ", pic_name);
+            this._uiSprite.spriteFrame = asset;
+            this._id = (this._id + 1) % this._album.length;
+        });
     }
 }

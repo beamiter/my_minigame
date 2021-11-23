@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var engine_1 = require("engine");
+var pictureController_1 = require("./pictureController");
 var PanelController = (function (_super) {
     tslib_1.__extends(PanelController, _super);
     function PanelController() {
@@ -26,6 +27,7 @@ var PanelController = (function (_super) {
         return _this;
     }
     PanelController.prototype.onTouchStart = function (touch, event) {
+        this._pictureController.hidden = true;
         if (!this._enableInput) {
             return;
         }
@@ -47,11 +49,19 @@ var PanelController = (function (_super) {
             if (!_this._ready) {
                 return;
             }
-            _this._background.active = false;
+            var uiSprite = _this._background.getComponent(engine_1.default.UISprite);
+            uiSprite.spriteFrame = null;
+            _this._pictureController.hidden = true;
             _this._startButton.active = false;
         });
         engine_1.default.game.customEventEmitter.on('JUMP_END', function () {
             _this.changeMusic();
+            if (!_this._needChange) {
+                _this._pictureController.changePicture();
+            }
+            else {
+                _this._pictureController.hidden = false;
+            }
         });
         engine_1.default.game.customEventEmitter.on('CAMERA_MOVE', function () {
             _this._enableInput = true;
@@ -118,6 +128,11 @@ var PanelController = (function (_super) {
             type: engine_1.default.TypeNames.String
         })
     ], PanelController.prototype, "name", void 0);
+    tslib_1.__decorate([
+        engine_1.default.decorators.property({
+            type: pictureController_1.default
+        })
+    ], PanelController.prototype, "_pictureController", void 0);
     PanelController = tslib_1.__decorate([
         engine_1.default.decorators.serialize("panelController")
     ], PanelController);
