@@ -38,8 +38,10 @@ export default class PanelController extends engine.Script {
             return;
         }
         // Hide first, load next.
-        this._pictureController.hidden = true;
-        this._pictureController.changePicture();
+        if (!this._pictureController.hidden) {
+            this._pictureController.hidden = true;
+            this._pictureController.changePicture();
+        }
 
         this._start_triggered = true;
         engine.game.customEventEmitter.emit('TOUCH_START');
@@ -75,10 +77,7 @@ export default class PanelController extends engine.Script {
         engine.game.customEventEmitter.on('JUMP_END', () => {
             // Change music.
             this.changeMusic();
-            if (!this._needChange) {
-                // Change picture when idle.
-                this._pictureController.changePicture();
-            } else {
+            if (this._needChange) {
                 this._pictureController.hidden = false;
             }
         });
@@ -95,7 +94,7 @@ export default class PanelController extends engine.Script {
             // Ready to start.
             this._ready = true;
             const label: engine.UILabel = this._startButton.transform2D.findChildByName('UILabel').entity.getComponent(engine.UILabel);
-            label.text = 'Start';
+            label.text = '开始';
         });
         engine.loader.load('musics/0.mp3', { cacheable: true, httpPriority: 100 }).promise.then((asset: engine.AudioClip) => {
             console.log('Loaded BGM');
