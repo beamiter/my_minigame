@@ -9,7 +9,7 @@ struct FVertexOutput
 cbuffer GaussianBlur {
     float u_radius;
     float u_sampleCount;
-    float u_intensity; // unused
+    float u_intensity;
 }
 
 DECLARE_TEXTURE(horizontalBlur);
@@ -19,14 +19,19 @@ float4 Main(in FVertexOutput In) : SV_Target0
 {
     float3 source = SAMPLE_TEXTURE(sourceTex, In.TexCoord).xyz;
     float sd = radiusToSD(u_radius);
+    if (u_sampleCount < 1.01) {
+        return float4(source, 1.0);
+    }
     
-    float step = 2. * u_radius / u_sampleCount;
+    float step = 2. * u_radius / (u_sampleCount - 1.0);
     float3 sum = float3(.0, .0, .0);
+    float q = .0;
     for (float i = .0; i < u_sampleCount; i += 1.) {
         float offset = -u_radius + step * i;
         float3 c1 = SAMPLE_TEXTURE(verticalBlur, uv(offset, .0, In.TexCoord)).xyz;
         float3 c2 = SAMPLE_TEXTURE(horizontalBlur, uv(.0, offset, In.TexCoord)).xyz;
         sum += (c1 + c2) * gaussian(offset, sd);
+        q += gaussian(offset, sd);
     }
-    return float4(sum / u_sampleCount + source, 1.0);
+    return float4(u_intensity * sum / q / 2.0 + source, 1.0);
 }

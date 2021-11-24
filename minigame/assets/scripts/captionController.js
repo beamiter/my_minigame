@@ -1,8 +1,8 @@
-
-import { SetupTouchListeners } from "!!Only Export Engine Module, Cant Use Internal Module：engine/platform/touch";
-import engine from "engine";
-
-const myStyle = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = require("tslib");
+var engine_1 = require("engine");
+var myStyle = {
     s1: {
         applyGradient: true,
         gradientTop: '#00ff00',
@@ -16,32 +16,16 @@ const myStyle = {
         bold: true,
         color: '#d887e8',
     },
-}
-
-@engine.decorators.serialize("captionController")
-export default class CaptionController extends engine.Script {
-    @engine.decorators.property({
-        type: engine.TypeNames.String
-    })
-    public name: string = "myname"
-
-    // private _uiLabel: engine.UILabel = this.entity.getComponent(engine.UILabel);
-    private _uiRichText: engine.UIRichText = this.entity.getComponent(engine.UIRichText);
-    private _stop: boolean = true;
-    private _init: boolean = false;
-    // @ts-ignore
-    set stop(s: boolean) {
-        this._stop = s;
-        if (!this._stop && !this._init) {
-            this._init = true;
-        }
-    }
-    // @ts-ignore
-    get stop() {
-        return this._stop;
-    }
-
-    private _poetry: string = "<style|applyGradient=true|gradientTop=#00ff00|gradientBottom=#ff44ff>我们的故事</style><br>\
+};
+var CaptionController = (function (_super) {
+    tslib_1.__extends(CaptionController, _super);
+    function CaptionController() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.name = "myname";
+        _this._uiRichText = _this.entity.getComponent(engine_1.default.UIRichText);
+        _this._stop = true;
+        _this._init = false;
+        _this._poetry = "<style|applyGradient=true|gradientTop=#00ff00|gradientBottom=#ff44ff>我们的故事</style><br>\
     <style|value=s1>钟于<\/style><br>\
     2005年 我们相遇<br>是学习的竞争者 也是朋友<br>怕打扰对方 关心总是默默的<br>会在生病请假时帮记笔记<br>\
     会在中考时暗暗为对方加油打气<br>会装作不经意间路过篮球场 邂逅那个熟悉的少年<br>\
@@ -64,18 +48,30 @@ export default class CaptionController extends engine.Script {
     从相恋到相守<br>\
     你和我终于变成了<br>\
     <style|value=s1>我们<\/style><br>";
-
-    //@ts-ignore
-    public onAwake() {
-        this._uiRichText.style = myStyle;
-        // console.log(this._uiRichText.text);
-        // console.log(this._uiRichText.style);
-        engine.loader.load('fonts/myfont.font', { cacheable: true }).promise.then((asset: engine.Font) => {
-            console.log('Loaded font.');
-            this._uiRichText.font = asset;
-        });
+        return _this;
     }
-    public onUpdate(dt: number) {
+    Object.defineProperty(CaptionController.prototype, "stop", {
+        get: function () {
+            return this._stop;
+        },
+        set: function (s) {
+            this._stop = s;
+            if (!this._stop && !this._init) {
+                this._init = true;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    CaptionController.prototype.onAwake = function () {
+        var _this = this;
+        this._uiRichText.style = myStyle;
+        engine_1.default.loader.load('fonts/myfont.font', { cacheable: true }).promise.then(function (asset) {
+            console.log('Loaded font.');
+            _this._uiRichText.font = asset;
+        });
+    };
+    CaptionController.prototype.onUpdate = function (dt) {
         if (this._init) {
             this._init = false;
             this._uiRichText.fontSize = 72;
@@ -86,11 +82,20 @@ export default class CaptionController extends engine.Script {
         }
         this.entity.transform2D.positionY += dt * 40;
         if (this.entity.transform2D.positionY > 2000) {
-            // Loop.
             this.entity.transform2D.positionY = 0;
         }
-    }
-    public onDestroy() {
-
-    }
-}
+    };
+    CaptionController.prototype.onDestroy = function () {
+    };
+    tslib_1.__decorate([
+        engine_1.default.decorators.property({
+            type: engine_1.default.TypeNames.String
+        })
+    ], CaptionController.prototype, "name", void 0);
+    CaptionController = tslib_1.__decorate([
+        engine_1.default.decorators.serialize("captionController")
+    ], CaptionController);
+    return CaptionController;
+}(engine_1.default.Script));
+exports.default = CaptionController;
+//# sourceMappingURL=captionController.js.map

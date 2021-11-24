@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var engine_1 = require("engine");
 var pictureController_1 = require("./pictureController");
+var captionController_1 = require("./captionController");
 var PanelController = (function (_super) {
     tslib_1.__extends(PanelController, _super);
     function PanelController() {
@@ -30,8 +31,10 @@ var PanelController = (function (_super) {
         if (!this._enableInput) {
             return;
         }
-        this._pictureController.hidden = true;
-        this._pictureController.changePicture();
+        if (!this._pictureController.hidden) {
+            this._pictureController.hidden = true;
+            this._pictureController.changePicture();
+        }
         this._start_triggered = true;
         engine_1.default.game.customEventEmitter.emit('TOUCH_START');
     };
@@ -56,13 +59,11 @@ var PanelController = (function (_super) {
             _this._pictureController.changePicture();
             _this._startButton.active = false;
             _this._enableInput = true;
+            _this._captionController.stop = false;
         });
         engine_1.default.game.customEventEmitter.on('JUMP_END', function () {
             _this.changeMusic();
-            if (!_this._needChange) {
-                _this._pictureController.changePicture();
-            }
-            else {
+            if (_this._needChange) {
                 _this._pictureController.hidden = false;
             }
         });
@@ -76,7 +77,7 @@ var PanelController = (function (_super) {
             _this._audio.pause();
             _this._ready = true;
             var label = _this._startButton.transform2D.findChildByName('UILabel').entity.getComponent(engine_1.default.UILabel);
-            label.text = 'Start';
+            label.text = '开始';
         });
         engine_1.default.loader.load('musics/0.mp3', { cacheable: true, httpPriority: 100 }).promise.then(function (asset) {
             console.log('Loaded BGM');
@@ -136,6 +137,11 @@ var PanelController = (function (_super) {
             type: pictureController_1.default
         })
     ], PanelController.prototype, "_pictureController", void 0);
+    tslib_1.__decorate([
+        engine_1.default.decorators.property({
+            type: captionController_1.default
+        })
+    ], PanelController.prototype, "_captionController", void 0);
     PanelController = tslib_1.__decorate([
         engine_1.default.decorators.serialize("panelController")
     ], PanelController);

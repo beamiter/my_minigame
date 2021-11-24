@@ -33,7 +33,7 @@
             "default": "white"
         }
     ],
-    "defaultRenderQueue": 3000,
+    "defaultRenderQueue": 2499,
     "passes": [
         {
             "lightMode": "Skybox",

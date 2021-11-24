@@ -1,67 +1,55 @@
 {
-	"resourceDirs": {
-		"buildIn": [],
-		"idePack": [
-			"assets/resource/"
-		]
-	},
-	"engineVersion": "1.1.0",
-	"build": {
-		"mainScene": {
-			"2d": "assets/resource/mygame2d.scene",
-			"3d": "assets/resource/mygame.scene"
+	"gameJson": {
+		"deviceOrientation": "portrait",
+		"engine": true,
+		"plugins": {
+			"WXEngine": {
+				"version": "1.1.9",
+				"provider": "wx20afc706a711eefc",
+				"contexts": [
+					{
+						"type": "isolatedContext"
+					}
+				]
+			}
 		},
-		"usingPlatform": [
-			[
-				"default"
-			]
-		],
-		"onlyBuildScript": false,
-		"clearAllBuildCache": false,
-		"disableAutoRegisterPack": false,
-		"textureCompressionEncodeQuality": {
-			"pvr": "pvrtcfast",
-			"etc": "etcfastperceptual",
-			"astc": "astcmedium",
-			"s3tc": "normal"
-		}
+		"showStatusBar": false,
+		"resizable": false,
+		"disableSetUserStorageFromMiniProgram": false,
+		"networkTimeout": {
+			"request": 60000,
+			"connectSocket": 60000,
+			"uploadFile": 60000,
+			"downloadFile": 60000
+		},
+		"lockStepOptions": {
+			"gameTick": 33,
+			"heartBeatTick": 2000,
+			"offlineTimeLength": 100000,
+			"UDPReliabilityStrategy": 3,
+			"dataType": "string"
+		},
+		"permission": {
+			"scope.userInfo": {
+				"desc": ""
+			},
+			"scope.userLocation": {
+				"desc": ""
+			},
+			"scope.werun": {
+				"desc": ""
+			},
+			"scope.writePhotosAlbum": {
+				"desc": ""
+			}
+		},
+		"navigateToMiniProgramAppIdList": [],
+		"subpackages": [],
+		"workers": "",
+		"openDataContext": "",
+		"openDataContextExtension": false
 	},
-	"layers": [
-		"Default",
-		"TransparentFx",
-		"Ignore Ragcast",
-		"",
-		"Water",
-		"UI",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		""
-	],
-	"physics2DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-	"physics3DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+	"engineVersion": "1.1.9",
 	"engineProjectId": "5a545f557fd0df9b581c0a800a",
 	"engineConfigJson": {
 		"globalSetting": {
@@ -107,58 +95,14 @@
 			"physics3DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
 			"backupURLs": [],
 			"globalHTTPRetry": 0,
-			"useEngineSubcontext": false
+			"useEngineSubcontext": false,
+			"workerPath": "",
+			"defaultSceneType": "3D",
+			"physics2DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 		}
 	},
-	"gameJson": {
-		"deviceOrientation": "portrait",
-		"engine": true,
-		"plugins": {
-			"WXEngine": {
-				"version": "1.1.0",
-				"provider": "wx20afc706a711eefc",
-				"contexts": [
-					{
-						"type": "isolatedContext"
-					}
-				]
-			}
-		},
-		"showStatusBar": false,
-		"resizable": false,
-		"disableSetUserStorageFromMiniProgram": false,
-		"networkTimeout": {
-			"request": 60000,
-			"connectSocket": 60000,
-			"uploadFile": 60000,
-			"downloadFile": 60000
-		},
-		"lockStepOptions": {
-			"gameTick": 33,
-			"heartBeatTick": 2000,
-			"offlineTimeLength": 100000,
-			"UDPReliabilityStrategy": 3,
-			"dataType": "string"
-		},
-		"permission": {
-			"scope.userInfo": {
-				"desc": ""
-			},
-			"scope.userLocation": {
-				"desc": ""
-			},
-			"scope.werun": {
-				"desc": ""
-			},
-			"scope.writePhotosAlbum": {
-				"desc": ""
-			}
-		},
-		"navigateToMiniProgramAppIdList": [],
-		"subpackages": [],
-		"workers": "",
-		"openDataContext": "",
-		"openDataContextExtension": false
+	"cli": {
+		"dispatchAction": ""
 	},
 	"buildConfigList": [
 		{
@@ -191,7 +135,66 @@
 			"buildWebGLEngine": true
 		}
 	],
-	"cli": {
-		"dispatchAction": ""
+	"ignoreFBX": false,
+	"layers": [
+		"Default",
+		"TransparentFx",
+		"Ignore Ragcast",
+		"",
+		"Water",
+		"UI",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		""
+	],
+	"physics2DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+	"physics3DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+	"build": {
+		"mainScene": {
+			"2d": "assets/resource/mygame2d.scene",
+			"3d": "assets/resource/mygame.scene"
+		},
+		"onlyBuildScript": false,
+		"clearAllBuildCache": false,
+		"usingPlatform": [
+			[
+				"default"
+			]
+		],
+		"textureCompressionEncodeQuality": {
+			"pvr": "pvrtcfast",
+			"etc": "etcfastperceptual",
+			"astc": "astcmedium",
+			"s3tc": "normal"
+		},
+		"disableAutoRegisterPack": false
+	},
+	"debug": {
+		"nativeDebugLogLevel": 3,
+		"nativeDebugLogFile": false,
+		"nativeDebugLogConsole": false
 	}
 }

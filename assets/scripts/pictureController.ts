@@ -14,10 +14,12 @@ export default class PictureController extends engine.Script {
     private _curTime: number = 0;
     private _id: number = 0;
     private _uiSprite: engine.UISprite = this.entity.getComponent(engine.UISprite);
-    private _album: string[] = [];
     private _previousAlpha: number = 0;
     private _targetAlpha: number = 0;
     private _deltaAlpha: number = 0;
+
+    private _album: string[] = [];
+    private _spriteMap: Map<string, engine.SpriteFrame> = new Map();
 
     // @ts-ignore
     set hidden(h: boolean) {
@@ -40,6 +42,12 @@ export default class PictureController extends engine.Script {
         for (let i = 0; i < 45; ++i) {
             this._album.push('pictures/m' + i + '.spriteframe');
         }
+        for (let pic_name of this._album) {
+            engine.loader.load(pic_name, { cacheable: true }).promise.then((asset: engine.SpriteFrame) => {
+                console.log("Loaded picture: ", pic_name);
+                this._spriteMap.set(pic_name, asset);
+            });
+        }
     }
     public onUpdate(dt: number) {
         // Vanish has higher priority.
@@ -58,9 +66,10 @@ export default class PictureController extends engine.Script {
 
         // Change has lower priority.
         if (this._needChange) {
-            this._needChange = false;
             const pic_name = this._album[this._id];
-            engine.loader.load(pic_name, { cacheable: true }).promise.then((asset: engine.SpriteFrame) => {
+            if (this._spriteMap.has(pic_name)) {
+                this._needChange = false;
+                const asset: engine.SpriteFrame = this._spriteMap.get(pic_name);
                 this._uiSprite.spriteFrame = asset;
                 this._uiSprite.entity.transform2D.size = engine.Vector2.createFromNumber(
                     asset.rect.width, asset.rect.height);
@@ -71,8 +80,8 @@ export default class PictureController extends engine.Script {
                     this._uiSprite.entity.transform2D.scale = engine.Vector2.createFromNumber(1, 1);
                 }
                 this._id = (this._id + 1) % this._album.length;
-                console.log('Loaded picture: ', pic_name);
-            });
+                console.log('Change to picture: ', pic_name);
+            }
         }
     }
     public changePicture() {

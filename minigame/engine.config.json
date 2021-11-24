@@ -42,6 +42,9 @@
 		"physics3DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
 		"backupURLs": [],
 		"globalHTTPRetry": 0,
-		"useEngineSubcontext": false
+		"useEngineSubcontext": false,
+		"workerPath": "",
+		"defaultSceneType": "3D",
+		"physics2DLayerCollisionMatrix": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 	}
 }

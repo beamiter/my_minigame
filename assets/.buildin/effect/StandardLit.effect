@@ -2,41 +2,6 @@
     "name": "System::Effect::StandardLit",
     "shaderProperties": [
         {
-            "key": "_Color",
-            "type": "Vector4",
-            "default": [
-                1,
-                1,
-                1,
-                1
-            ]
-        },
-        {
-            "key": "_Metallic",
-            "type": "Float",
-            "default": [
-                1.0
-            ]
-        },
-        {
-            "key": "_GlossMapScale",
-            "type": "Float",
-            "default": [
-                1.0
-            ]
-        },
-        {
-            "key": "_EmissionColor",
-            "type": "Vector4",
-            "default": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
-
-        {
             "key": "_MainTex_ST",
             "type": "Vector4",
             "default": [
@@ -48,10 +13,61 @@
             
         },
         {
+            "key": "_Color",
+            "type": "Vector4",
+            "default": [
+                0.5,
+                0.5,
+                0.5,
+                1
+            ]
+        },
+        {
+            "key": "_Specular",
+            "type": "Vector4",
+            "default": [
+                0.2,
+                0.2,
+                0.2,
+                1
+            ]
+        },
+        {
+            "key": "_EmissionColor",
+            "type": "Vector4",
+            "default": [
+                0,
+                0,
+                0,
+                1
+            ]
+        },
+        {
             "key": "_Cutoff",
             "type": "Float",
             "default": [
-                0.01
+                0.5
+            ]
+        },
+        {
+            "key": "_Glossiness",
+            "type": "Float",
+            "default": [
+                0.5
+            ]
+        },
+        {
+            "key": "_GlossMapScale",
+            "type": "Float",
+            "default": [
+                1.0
+            ]
+        },
+        {
+            "key": "_Metallic",
+            "type": "Float",
+            "default": [
+                0.0
             ]
         }
     ],
@@ -67,9 +83,9 @@
             "default": "white"
         },
         {
-            "key": "_MetallicGlossMap",
+            "key": "_EmissionMap",
             "type": "Texture2D",
-            "default": "white"
+            "default": "black"
         },
         {
             "key": "_OcclusionMap",
@@ -77,7 +93,12 @@
             "default": "white"
         },
         {
-            "key": "_EmissionMap",
+            "key": "_SpecGlossMap",
+            "type": "Texture2D",
+            "default": "white"
+        },
+        {
+            "key": "_MetallicGlossMap",
             "type": "Texture2D",
             "default": "white"
         }
@@ -92,28 +113,43 @@
                 "Fog",
                 "Shadow",
                 "Skin",
-                "SkinnedAnimation",
                 "LightMap"
             ],
             "multiCompile": [
                 [
-                    "USE_NORMAL_MAP",
+                    "_SPECULAR_SETUP",
+                    "__"
+                ],
+                [
+                    "USE_METALLICSPECGLOSSMAP",
+                    "__"
+                ],
+                [
+                    "USE_SPECGLOSSMAP",
+                    "__"
+                ],
+                [
+                    "USE_METALLICGLOSSMAP",
+                    "__"
+                ],
+                [
+                    "_SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A",
+                    "__"
+                ],
+                [
+                    "USE_NORMALMAP",
+                    "__"
+                ],
+                [
+                    "USE_EMISSIONMAP",
+                    "__"
+                ],
+                [
+                    "USE_AOMAP",
                     "__"
                 ],
                 [
                     "ENABLE_ALPHA_CUTOFF",
-                    "__"
-                ],
-                [
-                    "USE_EMISSIVE_MAP",
-                    "__"
-                ],
-                [
-                    "USE_METALLIC_MAP",
-                    "__"
-                ],
-                [
-                    "USE_AO_MAP",
                     "__"
                 ]
             ],
@@ -132,28 +168,43 @@
             "ps": "./StandardLitAdd.pixel.hlsl",
             "compileFlags": [
                 "Fog",
-                "Skin",
-                "SkinnedAnimation"
+                "Skin"
             ],
             "multiCompile": [
                 [
-                    "USE_NORMAL_MAP",
+                    "_SPECULAR_SETUP",
+                    "__"
+                ],
+                [
+                    "USE_METALLICSPECGLOSSMAP",
+                    "__"
+                ],
+                [
+                    "USE_SPECGLOSSMAP",
+                    "__"
+                ],
+                [
+                    "USE_METALLICGLOSSMAP",
+                    "__"
+                ],
+                [
+                    "_SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A",
+                    "__"
+                ],
+                [
+                    "USE_NORMALMAP",
+                    "__"
+                ],
+                [
+                    "USE_EMISSIONMAP",
+                    "__"
+                ],
+                [
+                    "USE_AOMAP",
                     "__"
                 ],
                 [
                     "ENABLE_ALPHA_CUTOFF",
-                    "__"
-                ],
-                [
-                    "USE_EMISSIVE_MAP",
-                    "__"
-                ],
-                [
-                    "USE_METALLIC_MAP",
-                    "__"
-                ],
-                [
-                    "USE_AO_MAP",
                     "__"
                 ]
             ],

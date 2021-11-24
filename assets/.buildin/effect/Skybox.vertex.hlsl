@@ -24,8 +24,8 @@ static const float aspect_ = 1.0;
 static const float4x4 ortho_matrix = {
     1.0 / (aspect_ * tan(fov_ * .5)), 0, 0, 0,
     0, 1.0 / tan(fov_ * .5), 0, 0,
-    0, 0, -1.0, 0,
-    0, 0, -1.0, 0 
+    0, 0, -1.0, -1.0,
+    0, 0, 0, 0 
 };
 
 void Main(in FVertexInput In, out FVertexOutput Out)

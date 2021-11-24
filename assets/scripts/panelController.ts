@@ -1,6 +1,7 @@
 
 import engine, { TouchInputComponent, TouchInputEvent } from "engine";
 import PictureController from "./pictureController";
+import CaptionController from "./captionController";
 
 @engine.decorators.serialize("panelController")
 export default class PanelController extends engine.Script {
@@ -12,6 +13,10 @@ export default class PanelController extends engine.Script {
         type: PictureController
     })
     public _pictureController: PictureController;
+    @engine.decorators.property({
+        type: CaptionController
+    })
+    public _captionController: CaptionController;
 
     private _album: string[] = [
         'musics/1.mp3',
@@ -72,6 +77,7 @@ export default class PanelController extends engine.Script {
             this._pictureController.changePicture();
             this._startButton.active = false;
             this._enableInput = true;
+            this._captionController.stop = false;
         });
 
         engine.game.customEventEmitter.on('JUMP_END', () => {

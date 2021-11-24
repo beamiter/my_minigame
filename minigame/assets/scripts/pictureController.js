@@ -14,10 +14,11 @@ var PictureController = (function (_super) {
         _this._curTime = 0;
         _this._id = 0;
         _this._uiSprite = _this.entity.getComponent(engine_1.default.UISprite);
-        _this._album = [];
         _this._previousAlpha = 0;
         _this._targetAlpha = 0;
         _this._deltaAlpha = 0;
+        _this._album = [];
+        _this._spriteMap = new Map();
         return _this;
     }
     Object.defineProperty(PictureController.prototype, "hidden", {
@@ -40,12 +41,22 @@ var PictureController = (function (_super) {
         configurable: true
     });
     PictureController.prototype.onAwake = function () {
+        var _this = this;
         for (var i = 0; i < 45; ++i) {
             this._album.push('pictures/m' + i + '.spriteframe');
         }
+        var _loop_1 = function (pic_name) {
+            engine_1.default.loader.load(pic_name, { cacheable: true }).promise.then(function (asset) {
+                console.log("Loaded picture: ", pic_name);
+                _this._spriteMap.set(pic_name, asset);
+            });
+        };
+        for (var _i = 0, _a = this._album; _i < _a.length; _i++) {
+            var pic_name = _a[_i];
+            _loop_1(pic_name);
+        }
     };
     PictureController.prototype.onUpdate = function (dt) {
-        var _this = this;
         if (this._needVanish) {
             this._curTime += dt;
             if (this._curTime >= this._epochTime) {
@@ -59,21 +70,22 @@ var PictureController = (function (_super) {
             return;
         }
         if (this._needChange) {
-            this._needChange = false;
-            var pic_name_1 = this._album[this._id];
-            engine_1.default.loader.load(pic_name_1, { cacheable: true }).promise.then(function (asset) {
-                _this._uiSprite.spriteFrame = asset;
-                _this._uiSprite.entity.transform2D.size = engine_1.default.Vector2.createFromNumber(asset.rect.width, asset.rect.height);
+            var pic_name = this._album[this._id];
+            if (this._spriteMap.has(pic_name)) {
+                this._needChange = false;
+                var asset = this._spriteMap.get(pic_name);
+                this._uiSprite.spriteFrame = asset;
+                this._uiSprite.entity.transform2D.size = engine_1.default.Vector2.createFromNumber(asset.rect.width, asset.rect.height);
                 if (asset.rect.width > asset.rect.height) {
                     var ratio = asset.rect.height / asset.rect.width;
-                    _this._uiSprite.entity.transform2D.scale = engine_1.default.Vector2.createFromNumber(ratio, ratio);
+                    this._uiSprite.entity.transform2D.scale = engine_1.default.Vector2.createFromNumber(ratio, ratio);
                 }
                 else {
-                    _this._uiSprite.entity.transform2D.scale = engine_1.default.Vector2.createFromNumber(1, 1);
+                    this._uiSprite.entity.transform2D.scale = engine_1.default.Vector2.createFromNumber(1, 1);
                 }
-                _this._id = (_this._id + 1) % _this._album.length;
-                console.log('Loaded picture: ', pic_name_1);
-            });
+                this._id = (this._id + 1) % this._album.length;
+                console.log('Change to picture: ', pic_name);
+            }
         }
     };
     PictureController.prototype.changePicture = function () {
